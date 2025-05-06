@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+    <style>
+        :root {
+            --font-family: 'Lato', sans-serif;
+            --border-color: black;
+            --header-color: rgba(34, 110, 147, 1);
+            --background-color: #f2f2f2;
+        }
+
+        body {
+            font-family: var(--font-family);
+        }
+
+        table, th, td {
+            border: 1px solid var(--border-color);
+            padding: 5px;
+            font-size: 17px;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--background-color);
+            color: var(--header-color);
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        th:hover {
+            background-color: #ddd;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        #myInput {
+            background: url('https://drive.google.com/uc?export=view&id=1pIej3X_4AieUKPkfWEs-kdoRo3UingnL') no-repeat;
+            height: 30px;
+            width: 100%;
+            font-size: 16px;
+            padding: 12px 20px 12px 40px;
+            border: 1px solid #ddd;
+            margin-bottom: 12px;
+        }
+    </style>
+    <title>Wrecks Table</title>
+</head>
+
+<body>
+    <p>Use the search bar to find any of the wrecks documented on this site or use the links in the table below. Sort using the column titles.</p>
+    <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for wrecks...">
+
+    <table id="myTable2">
+        <tr>
+            <th onclick="sortTable(0)" scope="col">Name</th>
+            <th onclick="sortTable(1)" scope="col">Nationality</th>
+            <th onclick="sortTable(2)" scope="col">Type</th>
+            <th onclick="sortTable(3)" scope="col">Build Date</th>
+            <th onclick="sortTable(4)" scope="col">Tonnage</th>
+            <th onclick="sortTable(5)" scope="col">Date of Loss</th>
+            <th onclick="sortTable(6)" scope="col">Cause of Loss</th>
+            <th onclick="sortTable(7)" scope="col">Depth</th>
+            <th onclick="sortTable(8)" scope="col">Lat</th>
+            <th onclick="sortTable(9)" scope="col">Long</th>
+        </tr>
+        <!-- Wreck rows go here -->
+        <tr><td><a href="https://www.buchandivers.com/wrecks/aberdeenshire">Aberdeenshire</a></td><td>British</td><td>Trawler</td><td>1900</td><td>213</td><td>21-Oct-1910</td><td>Ran aground</td><td>12 in 14m</td><td>57 27.722N </td><td>01 46.718W</td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/adventure">Adventure</a></td><td>British</td><td>Trawler</td><td>1906</td><td>184</td><td>06-Jan-1922</td><td>Mined</td><td>68 in 71m</td><td>57 24.097N  </td><td>01 37.318W</td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/anvers">Anvers</a></td><td>Belgian</td><td>Cargo</td><td>1908</td><td>4398</td><td>13-Nov-1940</td><td>Aircraft</td><td>43 in 52m</td><td>57 41.256N</td><td>01 47.794W</td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/astronomer">Astronomer</a></td><td>British</td><td>Cargo</td><td>1917</td><td>8401</td><td>02-Jun-1940</td><td>U-boat</td><td>56 in 67m</td><td>58 01.818N  </td><td>02 02.735W</td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/atland">Atland</a></td><td>Swedish</td><td>Cargo</td><td>1910</td><td>5203</td><td>25-Mar-1943</td><td>Collision</td><td>54 in 64m</td><td>57 28.777N  </td><td>01 38.244W</td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/bel-lily">Bel Lily</a></td><td>British</td><td>Trawler</td><td>1899</td><td>168</td><td>14-May-1917</td><td>Mined</td><td>45 in 50m</td><td>57 32.725N  </td><td>01 42.385W</td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/benington">Benington</a></td><td>British</td><td>Trawler</td><td>1890</td><td>131</td><td>07-May-1915</td><td>U-boat</td><td>77 in 81m</td><td>57 21.048N  </td><td>01 39.532W</td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/bretagne">Bretagne</a></td><td>Danish</td><td>Cargo</td><td>1912</td><td>1100</td><td>17-Apr-1917</td><td>U-boat</td><td>57 in 61m</td><td>57 41.493N  </td><td>01 43.365W</td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/cairnavon">Cairnavon</a></td><td>British</td><td>Cargo</td><td>1920</td><td>5030</td><td>01-Nov-1925</td><td>Ran aground</td><td>15 in 18m</td><td>57 27.786N </td><td>01 46.502W</td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/cairnmona">Cairnmona</a></td><td>British</td><td>Cargo</td><td>1918</td><td>4666</td><td>30-Oct-1939</td><td>U-boat</td><td>44 in 51m</td><td>57 37.769N  </td><td>01 43.791W</td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/cape-york">Cape York</a></td><td>British</td><td>Cargo</td><td>1926</td><td>5027</td><td>27-Aug-1940</td><td>Aircraft</td><td>79 in 93m</td><td>57 41.360N  </td><td>01 22.420W</td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/charles-goodanew">Charles Goodanew</a></td><td>British</td><td>Cargo</td><td>1911</td><td>791</td><td>17-Apr-1917</td><td>Mined</td><td>46 in 52m</td><td>57 38.279N  </td><td>01 44.235W</td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/chicago">Chicago</a></td><td>British</td><td>Cargo</td><td>1890</td><td>2381</td><td>10-Oct-1894</td><td>Ran aground</td><td>10 in 13m</td><td>57 24.950N  </td><td>01 49.750W</td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/city-of-osaka">City of Osaka</a></td><td>British</td><td>Cargo</td><td>1922</td><td>6614</td><td>23-Sep-1930</td><td>Ran aground</td><td>8 in 12m</td><td>57 22.576N </td><td>01 52.872W</td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/constant-star">Constant Star</a></td><td>British</td><td>Trawler</td><td>1962</td><td>140</td><td>27-Aug-1987</td><td>Ran aground</td><td>10 in 15m</td><td>57 28.817N </td><td>01 46.082W</td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/crisabelle-stephen">Crisabelle Stephen</a></td><td>British</td><td>Trawler</td><td>1939</td><td>230</td><td>16-Jan-1939</td><td>Ran aground</td><td>37 in 42</td><td>57 16.963N</td><td>01 53.257W</td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/dungonnell">Dungonnell</a></td><td>British</td><td>Cargo</td><td>1883</td><td>273</td><td>24-Feb-1903</td><td>Foundered</td><td>57 in 63m</td><td>57 17.257N</td><td>01 50.929W</td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/einar">Einar</a></td><td>Norwegian</td><td>Cargo</td><td>1872</td><td>217</td><td>16-Aug-1893</td><td>Ran aground</td><td>6 in 8m</td><td>57 28.303N </td><td>01 46.493W</td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/ethel-gwendoline">Ethel Gwendoline</a></td><td>British</td><td>Cargo</td><td>1883</td><td>252</td><td>21-Mar-1890</td><td>Foundered</td><td>53 in 56m</td><td>57 43.520N  </td><td>01 45.840W</td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/flotta">Flotta</a></td><td>British</td><td>Military</td><td>1941</td><td>545</td><td>06-Nov-1941</td><td>Foundered</td><td>56 in 62m</td><td>57 27.317N  </td><td>01 41.365W</td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/fort-royal">Fort Royal</a></td><td>British</td><td>Armed Trawler</td><td>1931</td><td>351</td><td>09-Feb-1940</td><td>Aircraft</td><td>56 in 63m</td><td>57 14.233N</td><td>01 49.390W</td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/fram">Fram</a></td><td>Swedish</td><td>Cargo</td><td>1897</td><td>2491</td><td>01-Feb-1940</td><td>U-boat</td><td>37 in 46m</td><td>57 42.734N </td><td>02 13.465W</td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/friedrich-bolte">Friedrich Bolte</a></td><td>German</td><td>Trawler</td><td>1906</td><td>241</td><td>16-Feb-1941</td><td>Foundered</td><td>63 in 66m</td><td>57 22.433N  </td><td>01 40.283W</td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/gelsina">Gelsina</a></td><td>British</td><td>Trawler</td><td>1916</td><td>226</td><td>25-Jun-1917</td><td>Mined</td><td>59 in 62m</td><td>57 6.519N </td><td>01 59.538W</td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/hit-or-miss">Hit or Miss</a></td><td>British</td><td>Trawler</td><td>1896</td><td>20</td><td>03-Dec-1900</td><td>Foundered</td><td>42 in 44m</td><td>57 31.079N </td><td>01 44.658W</td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/kathleen">Kathleen</a></td><td>British</td><td>Cargo</td><td>1887</td><td>367</td><td>26-Jan-1914</td><td>Foundered</td><td>66 in 72m</td><td>57 17.044N</td><td>01 46.236W</td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/kildale">Kildale</a></td><td>British</td><td>Cargo</td><td>1924</td><td>3877</td><td>03-Nov-1940</td><td>Aircraft</td><td>59 in 63m</td><td>57 45.217N  </td><td>01 46.027W</td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/knock-wreck-unknown">Knock Wreck</a></td><td>Unknown</td><td>Unknown</td><td>Unknown</td><td>Unknown</td><td>Unknown</td><td>Unknown</td><td>71 in 75m</td><td>57 46.796N  </td><td>01 57.279W</td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/loch-wasdale">Loch Wasdale</a></td><td>British</td><td>Trawler</td><td>1915</td><td>210</td><td>15-Dec-1942</td><td>Ran aground</td><td>10 in 15m</td><td>57 28.817N </td><td>01 46.082W</td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/lochnagar">Lochnagar</a></td><td>British</td><td>Trawler</td><td>1900</td><td>165</td><td>05-Jan-1909</td><td>Collision</td><td>61 in 63m</td><td>57 26. 629N  </td><td>01 39.189W</td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/lord-nelson">Lord Nelson</a></td><td>Icelandic</td><td>Trawler</td><td>1907</td><td>295</td><td>22-Nov-1940</td><td>Collision</td><td>52 in 57m</td><td>57 31.583N  </td><td>01 40.842W </td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/maria-w">Maria W</a></td><td>Dutch</td><td>Cargo</td><td>1932</td><td>241</td><td>22-Feb-1966</td><td>Ran aground</td><td>6 in 7m</td><td>57 23.464N </td><td>01 51.474W </td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/mercator">Mercator</a></td><td>Finnish</td><td>Cargo</td><td>1904</td><td>4260</td><td>01-Dec-1940</td><td>U-boat</td><td>72 in 82m</td><td>57 23.984N </td><td>01 36.542W</td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/muriel">Muriel</a></td><td>British</td><td>Cargo</td><td>1898</td><td>1831</td><td>17-Dec-1918</td><td>U-boat</td><td>43 in 48m</td><td>57 32.104N  </td><td>01 44.241W</td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/nile">Nile</a></td><td>British</td><td>Trawler</td><td>1899</td><td>196</td><td>29-Oct-1905</td><td>Ran aground</td><td>12 in 12m</td><td>57 23.800N  </td><td>01 52.615W</td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/nymphaea">Nymphaea</a></td><td>British</td><td>Cargo</td><td>1882</td><td>1969</td><td>14-Jul-1914</td><td>Ran aground</td><td>12 in 12m</td><td>57 22.593N </td><td>01 52.957W</td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/ormonde">Ormonde</a></td><td>British</td><td>Military</td><td>1906</td><td>250</td><td>16-Feb-1941</td><td>Aircraft</td><td>56 in 60m</td><td>57 24.668N  </td><td>01 44.935W</td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/prestonian">Prestonian</a></td><td>British</td><td>Cargo</td><td>1901</td><td>1152</td><td>25-May-1915</td><td>Ran aground</td><td>10 in 15m</td><td>57 40.853N </td><td>02 09.994W</td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/remuera">Remuera</a></td><td>British</td><td>Cargo/Liner</td><td>1911</td><td>11445</td><td>16-Aug-1940</td><td>Aircraft</td><td>42 in 57m</td><td>57 46.973N  </td><td>01 52.800W</td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/robert-bowen">Robert Bowen</a></td><td>British</td><td>Armed Trawler</td><td>1918</td><td>290</td><td>09-Feb-1940</td><td>Aircraft</td><td>57 in 63m</td><td>57 14.084N</td><td>01 48.853W</td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/simonburn">Simonburn</a></td><td>British</td><td>Cargo</td><td>1925</td><td>5213</td><td>20-Oct-1940</td><td>Ran aground</td><td>46 in 54m</td><td>57 37.109N  </td><td>01 42.684W</td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/sofie-bakke">Sofie Bakke</a></td><td>Sweden</td><td>Cargo</td><td>1938</td><td>5450</td><td>04-Aug-1940</td><td>Collision</td><td>56 in 68m</td><td>57 23.596N  </td><td>01 41.608W</td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/st-clement">St Clement</a></td><td>British</td><td>Cargo/Passenger</td><td>1928</td><td>450</td><td>05-Apr-1941</td><td>Aircraft</td><td>50 in 55m</td><td>57 16.901N  </td><td>01 51.858W</td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/st-fergus">St Fergus</a></td><td>British</td><td>Cargo</td><td>1913</td><td>390</td><td>31-Dec-1940</td><td>Collision</td><td>70 in 77m</td><td>57 37.339N  </td><td>01 38.971W</td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/st-glen">St Glen</a></td><td>British</td><td>Cargo</td><td>1907</td><td>4647</td><td>06-Sep-1940</td><td>Aircraft</td><td>57 in 67m</td><td>57 25.750N  </td><td>01 36.235W</td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/st-magnus">St Magnus</a></td><td>British</td><td>Cargo/Passenger</td><td>1912</td><td>809</td><td>12-Feb-1918</td><td>U-boat</td><td>42 in 49m</td><td>57 32.267N  </td><td>01 43.695W</td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/subworker">Subworker</a></td><td>British</td><td>Dredger</td><td>1910</td><td>338</td><td>26-Mar-1913</td><td>Foundered</td><td>76 in 83m</td><td>57 46.040N  </td><td>01 24.770W</td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/svarton">Svarton</a></td><td>Swedish</td><td>Cargo</td><td>1906</td><td>2475</td><td>03-Jan-1940</td><td>U-boat</td><td>71 in 75m</td><td>57 46.796N  </td><td>01 57.279W</td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/taylor">Taylor</a></td><td>British</td><td>Cargo</td><td>1914</td><td>201</td><td>30-Sep-1937</td><td>Capsized</td><td>53 in 58m</td><td>57 29.603N  </td><td>01 41.197W</td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/trevorian">Trevorian</a></td><td>British</td><td>Cargo</td><td>1920</td><td>4599</td><td>29-Nov-1943</td><td>Collision</td><td>66 in 76m</td><td>57 12.452N </td><td>01 47.889W</td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/trsat">Trsat</a></td><td>British</td><td>Cargo</td><td>1919</td><td>1369</td><td>07-Sep-1941</td><td>Aircraft</td><td>63 in 68m</td><td>57 45.963N  </td><td>01 53.238W</td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/tynemouth-castle">Tynemouth Castle</a></td><td>British</td><td>Trawler</td><td>1918</td><td>215</td><td>09-Dec-1939</td><td>Foundered</td><td>53 in 58m</td><td>57 21.952N  </td><td>01 47.088W</td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/u-1206">U-1206</a></td><td>German</td><td>U-boat</td><td>1943</td><td>769</td><td>14-Apr-1945</td><td>Scuttled</td><td>80 in 86m</td><td></td><td></td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/u-77">U 77</a></td><td>German</td><td>U-boat</td><td>1916</td><td>755</td><td>07-Jul-1916</td><td>Accident</td><td>95 in 100m</td><td></td><td></td></tr> 
+        <tr><td><a href="https://www.buchandivers.com/wrecks/virgilia">Virgilia</a></td><td>British</td><td>Trawler</td><td>1900</td><td>208</td><td>03-Jun-1917</td><td>U-boat</td><td>60 in 64m</td><td>57 14.209N </td><td>01 48.528W </td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/windward-ho">Windward Ho</a></td><td>British</td><td>Trawler</td><td>1902</td><td>226</td><td>09-May-1917</td><td>Mined</td><td>45 in 50m</td><td>57 25.490N  </td><td>01 45.440W</td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/wrangler">Wrangler</a></td><td>British</td><td>Salvage barge</td><td>1884</td><td>270</td><td>06-Oct-1941</td><td>Foundered</td><td>43 in 48m</td><td>57 32.838N  </td><td>01 43.192W</td></tr>
+        <tr><td><a href="https://www.buchandivers.com/wrecks/zitella">Zitella</a></td><td>British</td><td>Cargo</td><td>1929</td><td>4251</td><td>07-Feb-1940</td><td>Ran aground</td><td>10 in 10m</td><td>57 27.189N </td><td>01 47.871W</td></tr>
+    </table>
+
+    <script>
+        function myFunction() {
+            var input = document.getElementById("myInput");
+            var filter = input.value.toUpperCase();
+            var table = document.getElementById("myTable2");
+            var tr = table.getElementsByTagName("tr");
+    
+            for (var i = 1; i < tr.length; i++) {  // Start at index 1 to skip the header row
+                var td = tr[i].getElementsByTagName("td")[0];
+                if (td) {
+                    var txtValue = td.textContent || td.innerText;
+                    tr[i].style.display = txtValue.toUpperCase().indexOf(filter) > -1 ? "" : "none";
+                }
+            }
+        }
+    
+        function sortTable(columnIndex) {
+            let table = document.getElementById("myTable2");
+            let rows = Array.from(table.rows).slice(1); // Skip header row
+    
+            // Sort rows
+            rows.sort((rowA, rowB) => {
+                let cellA = rowA.cells[columnIndex].innerText || "";
+                let cellB = rowB.cells[columnIndex].innerText || "";
+    
+                // Handle "Depth" column (index 7)
+                if (columnIndex === 7) {
+                    return compareDepth(cellA, cellB);
+                }
+    
+                // Handle "Date of Loss" column (index 5)
+                if (columnIndex === 5) {
+                    return compareDates(cellA, cellB);
+                }
+
+                // Handle "Tonnage" column (index 4)
+                if (columnIndex === 4) {
+                    return compareTonnage(cellA, cellB);
+                }
+    
+                // Default sorting for other columns
+                return cellA.localeCompare(cellB);
+            });
+    
+            // Append sorted rows back into the table
+            rows.forEach(row => table.appendChild(row));
+        }
+    
+        // Comparison function for Depth
+        function compareDepth(depthA, depthB) {
+            let depthValueA = parseInt(depthA.split(' ')[0], 10);
+            let depthValueB = parseInt(depthB.split(' ')[0], 10);
+            return depthValueA - depthValueB; // Compare numerical values
+        }
+    
+        // Date comparison function
+        function compareDates(dateA, dateB) {
+            const parseDate = (date) => {
+                const months = {
+                    "Jan": "01", "Feb": "02", "Mar": "03", "Apr": "04",
+                    "May": "05", "Jun": "06", "Jul": "07", "Aug": "08",
+                    "Sep": "09", "Oct": "10", "Nov": "11", "Dec": "12"
+                };
+                const parts = date.split('-'); // Splits "21-Oct-1910"
+                return new Date(`${parts[2]}-${months[parts[1]]}-${parts[0]}`); // YYYY-MM-DD format
+            };
+    
+            let dateObjA = parseDate(dateA);
+            let dateObjB = parseDate(dateB);
+    
+            return dateObjA - dateObjB; // Compare Dates
+        }
+
+        // Comparison function for Tonnage
+        function compareTonnage(tonnageA, tonnageB) {
+            return parseInt(tonnageA, 10) - parseInt(tonnageB, 10); // Compare as numbers
+        }
+    </script>    
+
+</body>
