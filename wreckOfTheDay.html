@@ -47,6 +47,7 @@ var wreckList = [
 ["Atland",25,3,1943,"A Swedish registered cargo vessel of a unique \"Turret\" design.  She was carying iron ore, bound for Methil in Fife, when she collided with another ship in her convoy and sank with the loss of 19 of her crew.  She now lies in 64m."],
 ["Bel Lily",14,5,1917,"A Grimsby registered trawler which hit a mine laid by UC 49 while fishing off Peterhead.  All 10 of her crew were lost in the sinking.  She now lies in 50m."],
 ["Bretagne",17,4,1917,"Registered in Copenhagen, she was carying a cargo of coal from North Sheilds to Copenhagen when she was attacked by the U 45 and sunk by gunfire and torpedo.  All of the crew were rescued. She now lies in 61m."],
+["Caersin",28,11,1926,"A german built trawler, she was taken as a prize ship by HMS Penelope in WWI and used by the admiralty for war duties.  She was sold and returned to trawling service after the war but sank while under tow after a collision.  She now lies in 40m"],
 ["Cairnavon",1,11,1925,"She ran aground in dense fog while en route from Leith to Montreal with a general cargo, including coal, coke, rags and manganese.  All passengers and crew were rescued.  She now lies in 18m."],
 ["Cairnmona",30,10,1939,"Registered in Newcastle-upon-Tyne and a member of the Cairn line, she held a cargo of wool, gain, copper and zinc bound from Montreal to Leith when she was sunk by a torpedo from the U-13.  Three of the crew were lost.  She now lies in 51m."],
 ["Cape York",27,8,1940,"Registered in Glasgow, she was loaded with grain, wood and lead ingots and bount for Methil, Fife, she was bombed JU88 bombers from Aalsburg.  She no lies in 93m."],
@@ -71,6 +72,7 @@ var wreckList = [
 ["Mercator",1,12,1940,"A Finnish registered cargo ship, she sailed from Buenos Aires to Leith with a cargo of coffee, maize, linseed, casein and groundnut meal.  From Leith she departed for Helsinki and was torpedoed off Peterhead by the U-21.  All but one of her crew were saved.  She now lies in 82m."],
 ["Muriel",17,12,1918,"Registered in Newport, UK she was en route from the Tyne to Scapa Flow with a cargo of coal. Whilst passing Peterhead at 11:20 am she was struck by a torpedo fired by UC 58.  All of her crew were rescued.  She now lies in 48m."],
 ["Ormonde",16,2,1941,"A Grimsby registered trawler, she was requisitioned by the Admiralty as an armed mine-sweeper.  She was patrolling off Cruden Bay when she was attacked and sunk by German aircraft.  All of her crew perished.  She now lies in 60m."],
+["Parkhill",18,11,1939,"A Methil registered coaster, she was en-route from Blyth to Kirkwall with a cargo of coal when she was torpedoed by U-18 and lost with all hands off Kinnaird Head."],  
 ["Prestonian",25,5,1915,"Registered in Preston, she was on a voyage from Archangel to Dundee with a cargo of flax and timber when she ran aground at Aberdour Bay.  She now lies in 15m."],
 ["Remuera",16,8,1940,"One of our favourites, she was registered in Plymouth but built for the New Zealand Shipping Co. Ltd.  A large cargo liner, she was en route from Wellington and almost at her destination when she was attacked by aircraft and sunk by aerial torpedo.  All of the crew were rescued.  She now lies in 57m."],
 ["Robert Bowen",9,2,1940,"An armed trawler working out of Aberdeen on minesweeping duties patrolling the North East coast.  She was operating just north of Aberdeen when she was discovered by enemy aircraft and sunk by a direct bomb hit, killing all onboard."],
@@ -81,12 +83,14 @@ var wreckList = [
 ["St Glen",6,9,1940,"A Newport registered cargo ship, she was en route from Freetown to Methil with a cargo of wheat and tinned corned beef when she was attacked and sunk by German aircraft.  Three of her crew were lost.  She now lies in 67m."],
 ["St Magnus",12,2,1918,"The Aberdeen registered passenger and cargo carrier had sailed from Lerwick for Aberdeen and was just passing Peterhead when she was torpedoed by UC 58. Four of her passengers and one of her crew were lost.  She now lies in 49m."],
 ["Subworker",26,3,1913,"The London registered bucket dredger barge was under tow from the Clyde to Aberdeen when the tow parted and she foundered in heavy seas 16 miles off Rattray Head.  She now lies in 83m."],
+["Svarton",3,1,1940,"The Stockholm registered cargo ship was en route from Narvik to Middlesborough when she was torpedoed by the U-58 off Kinnaird Head.  She now lies in 75m."],
 ["Taylor",30,9,1937,"The Sunderland registered steam lighter was on a voyage from Buckie to Sunderland with a cargo of sleepers, when she capsized and foundered off Peterhead. Her captain survived and was picked up by the Grimsby steam trawler Ocean Princess, however the remaining five crew were lost.  She now lies in 58m."],
 ["Trevorian",29,11,1943,"The St Ives registered cargo ship was on a voyage from Hull to the Mediterranean when she collided with and Icelandic trawler and sank.  The fate of her crew is unknown.  She now lies in 76m."],
 ["Trsat",7,9,1941,"Registered in Cardiff, she was a steam coaster on passage from Reykjavik to Hull with a cargo of 845 tons of fish when she was bombed by a single Luftwaffe aircraft off Kinnaird Head.   Three men were lost in the sinking.  She now lies in 68m."],
 ["Tynemouth Castle",9,12,1939,"A Grimsby registered trawler, she struck the Cruden Scares and founderd 3 miles south east of Cruden Bay.  The fate of her crew is unknown, she now lies in 58m."],
 ["U-1206",14,4,1945,"A type VII-C U-boat, she was on patrol off the Buchan coast when she was abandoned and scuttled.  All of the crew escaped in the liferafts and either made it ashore or were picked up by local boats.  Three of the crew lost their life attepting to scale the cliffs south of Boddam."],
 ["U 77",7,7,1916,"A type UE 1 mine laying U-boat from WW1.  Lost, presumed in an accident, while on a mine laying mission off Kinnaird Head, Fraserburgh.  All of the crew were lost."],
+["Virgilia",3,6,1917,"A Grimsby registered trawler, sunk by the UC 77 after she was apprehended while fishing off Aberdeen"],
 ["Windward Ho",9,5,1917,"A Hull registered trawler en route from Hull to the fishing grounds she detonated a German contact mine which had been laid by UC 49.  All eight crew were lost when she sank three miles SSE of Buchan Ness.  She now lies in 50m."],
 ["Wrangler",6,10,1941,"A Southampton registered hopper-barge she was engaged in close-inshore salvage work to the north of Peterhead when she ran aground on the Girdle Wears and foundered.  She now lies 48m."],
 ["Zitella",7,2,1940,"A London registered steam ship, she was outward bound from Narvik in Norway to Middlesborough with a cargo of iron ore in her hold and with 33 crew members on board when she ran aground in poor weather and fog at Longhaven, just south of Buchan Ness.  All of her crew were rescued and she now lies broken up in 10m."],
@@ -100,6 +104,7 @@ let title = wreckDetails[2]; //formatted title page either wreck of day or anniv
 //let srcPath = "https://drive.google.com/uc?export=view&id=" + wreckList[wreckIndex][4]  //
 let wreckImgRef = wreckList[wreckIndex][0].replace(/ /g, "%20")
 let srcPath = "https://storage.googleapis.com/buchan-shipwrecks-wreck-thumbnails/" + wreckImgRef + ".jpg"
+console.log("srcPath:", srcPath);
 let pagePath = "https://www.buchandivers.com/wrecks/" + wreckList[wreckIndex][0].replace(/ /g, "-").toLowerCase()
 
 //var paraText = "The " + "<a href=\"" + wreckList[wreckIndex][4] +"\">" + wreckList[wreckIndex][0] + "</a>" + " sank " + ageText + wreckList[wreckIndex][5];
@@ -112,6 +117,7 @@ document.getElementById("wreckImage").src = srcPath;
 function findWreck() {// returns index of wreck to display plus sinking anniversary text and title in 3 element array
 
 	var today = new Date();
+  //let today = new Date(1950, 5, 3)
 	var dayCount = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];  //cumulative days in year at start of month
 	var mn = today.getMonth();
 	var dn = today.getDate();
