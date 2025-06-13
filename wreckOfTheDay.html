@@ -34,8 +34,11 @@
   
 
 <script>
-//table of all wrecks including link details and thumbnail picture sources, thumbnails must be stored in Google Cloud Storage
-//thumbnails must be stored exactly as the wreck name.jpg including caps and spacing
+/* table of all wrecks including link details and thumbnail picture sources, thumbnails must be stored in Google Cloud Storage
+   thumbnail bucket in jim's account, under the BSAC File Uploads project, in a storage bucket
+   https://console.cloud.google.com/storage/browser/buchan-shipwrecks-wreck-thumbnails;tab=objects?forceOnBucketsSortingFiltering=true&hl=en-au&inv=1&invt=Abz_TA&project=bsac-file-uploads&prefix=&forceOnObjectsSortingFiltering=false
+   thumbnails must be stored exactly as the wreck name.jpg including caps and spacing
+*/
 
 var wreckList = [
 
@@ -82,9 +85,9 @@ var wreckList = [
 ["St Fergus",31,12,1940,"An Aberdeen registered passenger and cargo carrier operating the Aberdeen to Stromness route, she collided with a much larger ship, the SS Lima, and sank with the loss of at least one of her crew.  She now lies in 77m."],
 ["St Glen",6,9,1940,"A Newport registered cargo ship, she was en route from Freetown to Methil with a cargo of wheat and tinned corned beef when she was attacked and sunk by German aircraft.  Three of her crew were lost.  She now lies in 67m."],
 ["St Magnus",12,2,1918,"The Aberdeen registered passenger and cargo carrier had sailed from Lerwick for Aberdeen and was just passing Peterhead when she was torpedoed by UC 58. Four of her passengers and one of her crew were lost.  She now lies in 49m."],
-["Subworker",26,3,1913,"The London registered bucket dredger barge was under tow from the Clyde to Aberdeen when the tow parted and she foundered in heavy seas 16 miles off Rattray Head.  She now lies in 83m."],
 ["Svarton",3,1,1940,"The Stockholm registered cargo ship was en route from Narvik to Middlesborough when she was torpedoed by the U-58 off Kinnaird Head.  She now lies in 75m."],
 ["Taylor",30,9,1937,"The Sunderland registered steam lighter was on a voyage from Buckie to Sunderland with a cargo of sleepers, when she capsized and foundered off Peterhead. Her captain survived and was picked up by the Grimsby steam trawler Ocean Princess, however the remaining five crew were lost.  She now lies in 58m."],
+["TIC No8",29,10,1911,"The bucket dredger barge was under tow from the Clyde to North Sheilds when the tow parted and she foundered in heavy seas 5 miles off Rattray Head.  All of her 5 crew were lost.  She now lies in 83m."],
 ["Trevorian",29,11,1943,"The St Ives registered cargo ship was on a voyage from Hull to the Mediterranean when she collided with and Icelandic trawler and sank.  The fate of her crew is unknown.  She now lies in 76m."],
 ["Trsat",7,9,1941,"Registered in Cardiff, she was a steam coaster on passage from Reykjavik to Hull with a cargo of 845 tons of fish when she was bombed by a single Luftwaffe aircraft off Kinnaird Head.   Three men were lost in the sinking.  She now lies in 68m."],
 ["Tynemouth Castle",9,12,1939,"A Grimsby registered trawler, she struck the Cruden Scares and founderd 3 miles south east of Cruden Bay.  The fate of her crew is unknown, she now lies in 58m."],
@@ -125,6 +128,10 @@ function findWreck() {// returns index of wreck to display plus sinking annivers
 	var dayOfYear = dayCount[mn] + dn;
     
   //loop through table until wreck found with with day/month same as today
+
+  //test harness, to check if thumbnail can be loaded correctly
+  //mn = 9  //month numbers start at zero (jan - 0)
+  //dn = 29
     
   var index = 999;
     
