@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenSeaMap & Buchan Divers Wreck Database</title>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+    <!-- Custom CSS for map container -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7f6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        #map {
+            height: 100vh; /* Map takes full viewport height */
+            width: 100%; /* Map takes full viewport width */
+            max-width: none; /* Remove max-width restriction for full screen */
+            border-radius: 0; /* Remove border-radius for full screen */
+            box-shadow: none; /* Remove box-shadow for full screen */
+            overflow: hidden;
+            margin-bottom: 0; /* Remove margin for full screen */
+        }
+        .leaflet-popup-content-wrapper {
+            border-radius: 8px !important; /* Rounded corners for popups */
+        }
+        .leaflet-popup-content {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .leaflet-popup-content h3 {
+            margin-top: 0;
+            color: #34495e;
+            font-size: 1.2em;
+        }
+        .leaflet-popup-content p {
+            margin-bottom: 5px;
+        }
+        .leaflet-popup-content a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .leaflet-popup-content a:hover {
+            text-decoration: underline;
+        }
+        .leaflet-popup-content img {
+            border-radius: 4px;
+            max-width: 100%; /* Ensure images fit within popup */
+            height: auto;
+            display: block;
+            margin: 0 auto 10px auto;
+        }
+        .leaflet-control-layers-toggle {
+            border-radius: 5px; /* Rounded corners for layer control toggle */
+        }
+        .leaflet-control-layers-expanded {
+            border-radius: 8px; /* Rounded corners for expanded layer control */
+        }
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            font-size: 1.5em;
+            color: #333;
+            border-radius: 12px; /* Match map border-radius */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        /* Custom tooltip styling for permanent labels (REMOVED) */
+        /* .leaflet-tooltip.leaflet-tooltip-bottom {
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #333;
+            border: 1px solid #ccc;
+            padding: 3px 6px;
+            font-size: 0.9em;
+            font-weight: bold;
+            white-space: nowrap;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+            opacity: 1 !important;
+        } */
+
+        /* Basic responsiveness */
+        @media (max-width: 768px) {
+            #map {
+                height: 100vh;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="map">
+        <div class="loading-overlay" id="loadingOverlay">
+            Loading wreck data...
+        </div>
+    </div>
+
+    <!-- Leaflet JavaScript -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+        // Function to convert "DD MM.mmmQ" to decimal degrees
+        function convertDMQToDecimal(coordStr) {
+            if (!coordStr) return null;
+
+            // Trim whitespace from coordStr before matching
+            const trimmedCoordStr = coordStr.trim();
+            const parts = trimmedCoordStr.match(/(\d+)\s+(\d+\.\d+)([NSEW])/i);
+            if (!parts) {
+                console.warn("Could not parse coordinate string:", trimmedCoordStr);
+                return null;
+            }
+
+            let degrees = parseFloat(parts[1]);
+            let minutes = parseFloat(parts[2]);
+            const hemisphere = parts[3].toUpperCase();
+
+            let decimal = degrees + (minutes / 60);
+
+            if (hemisphere === 'S' || hemisphere === 'W') {
+                decimal *= -1;
+            }
+            return decimal;
+        }
+
+        // Wrap the map initialization and logic inside window.onload to ensure Leaflet is fully loaded
+        window.onload = function() {
+            // Debugging check: Confirm Leaflet's L object is available
+            if (typeof L === 'undefined') {
+                console.error("Leaflet library (L) is not defined. It might not have loaded correctly.");
+                const mapDiv = document.getElementById('map');
+                if (mapDiv) {
+                    mapDiv.innerHTML = '<p style="text-align: center; color: red;">Error: Map library failed to load. Please check your internet connection and browser console.</p>';
+                }
+                return; // Stop execution if L is not available
+            } else {
+                console.log("Leaflet (L) is defined. Proceeding with map initialization.");
+            }
+
+            const loadingOverlay = document.getElementById('loadingOverlay');
+
+            // Initialize the map
+            // Centered on Peterhead, Scotland [latitude, longitude] and zoom level (9 is a good starting point for a regional view)
+            const map = L.map('map').setView([57.5091, -1.7832], 9); // Centered on Peterhead, Scotland
+
+            // --- 1. Add OpenStreetMap Base Layer ---
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>',
+                maxZoom: 18,
+            }).addTo(map);
+
+            // --- 2. Add OpenSeaMap Overlay Layer ---
+            L.tileLayer('http://tiles.openseamap.org/seamark/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="http://www.openseamap.org">OpenSeaMap</a>',
+                maxZoom: 18,
+                transparent: true
+            }).addTo(map);
+
+            // Define the URL for your CSV data
+            const csvUrl = "https://storage.googleapis.com/buchan-divers-wreck-database/wreckDatabase.csv";
+
+            // --- Fallback/Example Wreck Data (if CSV fetch fails) ---
+            const myWreckDataFallback = {
+                "type": "FeatureCollection",
+                "features": [
+                    {
+                        "type": "Feature",
+                        "properties": {
+                            "name": "Sample Wreck (Fallback)",
+                            "description": "This is a fallback wreck entry, shown because the CSV data could not be loaded. Please check browser console for CORS errors and Google Storage bucket settings.",
+                            "link": "https://www.google.com/search?q=sample+wreck",
+                            "iconUrl": "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-grey.png" // Grey icon for fallback
+                        },
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [-1.75, 57.5] // Near Peterhead
+                        }
+                    }
+                ]
+            };
+
+
+            // --- Function to fetch and process CSV data ---
+            async function loadWreckData() {
+                let parsedWreckData = null; // To hold the successfully parsed data
+                try {
+                    loadingOverlay.style.display = 'flex'; // Show loading overlay
+                    console.log(`Attempting to fetch CSV from: ${csvUrl}`);
+
+                    const response = await fetch(csvUrl); // fetch defaults to 'cors' for cross-origin requests
+                    console.log(`Fetch response status: ${response.status}`);
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error(`HTTP error fetching CSV! Status: ${response.status}, Details: ${errorText}`);
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const csvText = await response.text();
+                    console.log("CSV text fetched successfully.");
+
+                    const lines = csvText.split('\n');
+                    if (lines.length < 2) {
+                        console.warn("CSV file is empty or only has a header, or lines are not split by '\\n'. Using fallback data.");
+                        parsedWreckData = myWreckDataFallback; // Fallback to example data if CSV is empty
+                    } else {
+                        const headers = lines[0].split(',').map(header => header.trim());
+                        const nameColIndex = headers.indexOf('Name');
+                        const latColIndex = headers.indexOf('Lat');
+                        const longColIndex = headers.indexOf('Long');
+
+                        if (nameColIndex === -1 || latColIndex === -1 || longColIndex === -1) {
+                            console.warn("Required columns (Name, Lat, Long) not found in CSV header. Using fallback data.");
+                            parsedWreckData = myWreckDataFallback; // Fallback if headers are missing
+                        } else {
+                            const geoJsonFeatures = [];
+                            for (let i = 1; i < lines.length; i++) {
+                                const line = lines[i].trim();
+                                if (!line) continue; // Skip empty lines
+
+                                const values = line.split(',');
+                                // Ensure values array has enough elements and non-empty values for required columns
+                                if (values.length <= Math.max(nameColIndex, latColIndex, longColIndex) ||
+                                    !values[nameColIndex] || !values[latColIndex] || !values[longColIndex]) {
+                                    console.warn(`Skipping malformed or incomplete line: ${line}`);
+                                    continue;
+                                }
+
+                                const name = values[nameColIndex].trim();
+                                const latStr = values[latColIndex].trim();
+                                const longStr = values[longColIndex].trim();
+
+                                const latitude = convertDMQToDecimal(latStr);
+                                const longitude = convertDMQToDecimal(longStr);
+
+                                if (latitude !== null && longitude !== null) {
+                                    geoJsonFeatures.push({
+                                        "type": "Feature",
+                                        "properties": {
+                                            "name": name || "Unknown Wreck",
+                                            "description": `Original: ${latStr}, ${longStr}<br>Decimal: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`,
+                                            "link": `https://www.google.com/maps?q=${latitude},${longitude}`,
+                                            "iconUrl": "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-black.png",
+                                            "iconSize": [25, 41],
+                                            "iconAnchor": [12, 41],
+                                            "popupAnchor": [1, -34]
+                                        },
+                                        "geometry": {
+                                            "type": "Point",
+                                            "coordinates": [longitude, latitude] // GeoJSON is [longitude, latitude]
+                                        }
+                                    });
+                                } else {
+                                    console.warn(`Could not parse coordinates for: Name: ${name}, Lat: '${latStr}', Long: '${longStr}'`);
+                                }
+                            }
+                            parsedWreckData = { "type": "FeatureCollection", "features": geoJsonFeatures };
+                        }
+                    }
+
+                } catch (error) {
+                    console.error("Error loading or processing wreck data:", error);
+                    parsedWreckData = myWreckDataFallback;
+                    const mapDiv = document.getElementById('map');
+                    if (mapDiv) {
+                        mapDiv.innerHTML = `<p style="text-align: center; color: red; padding: 20px;">
+                            <strong>Failed to load wreck data from CSV:</strong> ${error.message}.<br>
+                            This is almost certainly a **CORS (Cross-Origin Resource Sharing)** issue. <br>
+                            To fix this, you need to configure your Google Storage bucket to allow CORS requests from your website's domain.<br>
+                            **Please check your browser's Developer Console (F12 -> Console tab -> Network tab) for specific CORS error messages.**
+                            Using fallback data for now.
+                        </p>`;
+                    }
+                } finally {
+                    loadingOverlay.style.display = 'none'; // Hide loading overlay
+
+                    // Ensure parsedWreckData is available before creating the layer
+                    if (parsedWreckData) {
+                        const wreckLayer = L.geoJSON(
+                            parsedWreckData,
+                            {
+                                pointToLayer: function (feature, latlng) {
+                                    const customIcon = L.icon({
+                                        iconUrl: feature.properties.iconUrl,
+                                        iconSize: feature.properties.iconSize || [25, 41],
+                                        iconAnchor: feature.properties.iconAnchor || [12, 41],
+                                        popupAnchor: feature.properties.popupAnchor || [1, -34]
+                                    });
+                                    // Create the marker
+                                    const marker = L.marker(latlng, { icon: customIcon });
+
+                                    // Removed permanent tooltip binding:
+                                    // if (feature.properties.name) {
+                                    //     marker.bindTooltip(feature.properties.name, {
+                                    //         permanent: true,
+                                    //         direction: 'bottom',
+                                    //         className: 'wreck-label'
+                                    //     }).openTooltip();
+                                    // }
+
+                                    return marker;
+                                },
+                                onEachFeature: function (feature, layer) {
+                                    let popupContent = `<h3>${feature.properties.name}</h3>`;
+                                    if (feature.properties.description) {
+                                        popupContent += `<p>${feature.properties.description}</p>`;
+                                    }
+                                    if (feature.properties.link) {
+                                        popupContent += `<p><a href="${feature.properties.link}" target="_blank">View on Google Maps</a></p>`;
+                                    }
+                                    layer.bindPopup(popupContent);
+                                }
+                            }
+                        ).addTo(map);
+
+                        // Add the new wreck layer to the layer control
+                        overlayMaps["Wreck Database"] = wreckLayer;
+                        updateLayerControl();
+                    }
+                }
+            } // End loadWreckData function
+
+            // Define base and overlay maps for layer control
+            const baseMaps = {
+                "OpenStreetMap": L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }),
+            };
+
+            const overlayMaps = {
+                "OpenSeaMap": L.tileLayer('http://tiles.openseamap.org/seamark/{z}/{x}/{y}.png', { transparent: true, maxZoom: 18 }),
+            };
+
+            // Original custom points (now separate layer)
+            const myOriginalCustomPoints = {
+                "type": "FeatureCollection",
+                "features": [
+                    {
+                        "type": "Feature",
+                        "properties": {
+                            "name": "Historic Lighthouse (Belgium)",
+                            "description": "An iconic lighthouse marking the entrance to the bay. Offers stunning views.",
+                            "link": "https://en.wikipedia.org/wiki/List_of_lighthouses_in_Belgium",
+                            "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Oostende_-_Vuurtoren_Lange_Nelle.jpg/250px-Oostende_-_Vuurtoren_Lange_Nelle.jpg",
+                            "iconUrl": "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-violet.png" // Distinct icon for original points
+                        },
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [2.909, 51.242]
+                        }
+                    },
+                    {
+                        "type": "Feature",
+                        "properties": {
+                            "name": "Safe Anchorage A (Belgium)",
+                            "description": "A well-sheltered anchorage popular with cruisers. Good holding ground and calm waters.",
+                            "link": "https://www.google.com/search?q=safe+anchorage+example",
+                            "iconUrl": "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png",
+                            "iconSize": [25, 41],
+                            "iconAnchor": [12, 41],
+                            "popupAnchor": [1, -34]
+                        },
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [2.85, 51.3]
+                        }
+                    },
+                    {
+                        "type": "Feature",
+                        "properties": {
+                            "name": "Marina Royal Belgian Yacht Club",
+                            "description": "Full-service marina with fuel, water, and repair facilities. Close to town for provisions.",
+                            "link": "https://www.rbyc.be/en/marina/",
+                            "iconUrl": "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png",
+                            "iconSize": [25, 41],
+                            "iconAnchor": [12, 41],
+                            "popupAnchor": [1, -34]
+                        },
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [2.934, 51.229]
+                        }
+                    },
+                     {
+                        "type": "Feature",
+                        "properties": {
+                            "name": "Small Fishing Village Port (Belgium)",
+                            "description": "Charming village port, limited services but authentic atmosphere.",
+                            "link": "https://www.google.com/search?q=small+fishing+port+example",
+                            "iconUrl": "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png",
+                            "iconSize": [25, 41],
+                            "iconAnchor": [12, 41],
+                            "popupAnchor": [1, -34]
+                        },
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [3.2, 51.35]
+                        }
+                    }
+                ]
+            };
+
+            const originalCustomPointsLayer = L.geoJSON(myOriginalCustomPoints, {
+                pointToLayer: function (feature, latlng) {
+                    if (feature.properties.iconUrl) {
+                        const customIcon = L.icon({
+                            iconUrl: feature.properties.iconUrl,
+                            iconSize: feature.properties.iconSize || [25, 41],
+                            iconAnchor: feature.properties.iconAnchor || [12, 41],
+                            popupAnchor: feature.properties.popupAnchor || [1, -34]
+                        });
+                        return L.marker(latlng, { icon: customIcon });
+                    }
+                    return L.marker(latlng);
+                },
+                onEachFeature: function (feature, layer) {
+                    let popupContent = `<h3>${feature.properties.name || 'Unnamed Location'}</h3>`;
+                    if (feature.properties.image) {
+                        popupContent += `<img src="${feature.properties.image}" alt="Image of ${feature.properties.name}"
+                                            onerror="this.onerror=null;this.src='https://placehold.co/200x150/EEEEEE/AAAAAA?text=No+Image';"
+                                            style="max-width:200px; height:auto; margin-bottom: 10px;"><br>`;
+                    }
+                    if (feature.properties.description) {
+                        popupContent += `<p>${feature.properties.description}</p>`;
+                    }
+                    if (feature.properties.link) {
+                        popupContent += `<p><a href="${feature.properties.link}" target="_blank">More Information</a></p>`;
+                    }
+                    layer.bindPopup(popupContent);
+                }
+            }).addTo(map); // Add these points directly to map initially
+
+            overlayMaps["Original Custom Points"] = originalCustomPointsLayer; // Add to layer control
+
+            // Function to update the layer control. This is important because the wreck data is loaded asynchronously.
+            let layerControl = null; // Variable to hold the layer control instance
+
+            function updateLayerControl() {
+                if (layerControl) {
+                    map.removeControl(layerControl); // Remove old control if it exists
+                }
+                layerControl = L.control.layers(baseMaps, overlayMaps).addTo(map);
+            }
+
+            // Call loadWreckData immediately
+            loadWreckData();
+
+            // Initial call to update layer control (before wreck data might be loaded, it will be updated again later)
+            updateLayerControl();
+
+        }; // End of window.onload function
+    </script>
+</body>
+</html>
