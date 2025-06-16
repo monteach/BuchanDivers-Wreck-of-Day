@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenSeaMap & Custom Points - Single File</title>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+    <!-- Custom CSS for map container -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7f6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        h1 {
+            color: #2c3e50;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        #map {
+            height: 70vh; /* Responsive height */
+            width: 90%; /* Responsive width */
+            max-width: 1200px; /* Max width for larger screens */
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden; /* Ensures rounded corners are applied */
+            margin-bottom: 20px;
+        }
+        .leaflet-popup-content-wrapper {
+            border-radius: 8px !important; /* Rounded corners for popups */
+        }
+        .leaflet-popup-content {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .leaflet-popup-content h3 {
+            margin-top: 0;
+            color: #34495e;
+            font-size: 1.2em;
+        }
+        .leaflet-popup-content p {
+            margin-bottom: 5px;
+        }
+        .leaflet-popup-content a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .leaflet-popup-content a:hover {
+            text-decoration: underline;
+        }
+        .leaflet-popup-content img {
+            border-radius: 4px;
+            max-width: 100%; /* Ensure images fit within popup */
+            height: auto;
+            display: block;
+            margin: 0 auto 10px auto;
+        }
+        .leaflet-control-layers-toggle {
+            border-radius: 5px; /* Rounded corners for layer control toggle */
+        }
+        .leaflet-control-layers-expanded {
+            border-radius: 8px; /* Rounded corners for expanded layer control */
+        }
+
+        /* Basic responsiveness */
+        @media (max-width: 768px) {
+            #map {
+                height: 60vh;
+                width: 95%;
+            }
+            h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>My Nautical Map with Custom Points</h1>
+    <div id="map"></div>
+
+    <!-- Leaflet JavaScript -->
+    <!-- Removed integrity and crossorigin attributes for potential loading issues -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+        // Wrap the map initialization and logic inside DOMContentLoaded to ensure Leaflet is fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize the map
+            // [latitude, longitude] and zoom level (9 is a good starting point for a regional view)
+            const map = L.map('map').setView([50.8427, 4.3526], 9); // Example: Brussels area. Adjust as needed.
+
+            // --- 1. Add OpenStreetMap Base Layer ---
+            // This provides the fundamental road network and land features.
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>',
+                maxZoom: 18,
+            }).addTo(map);
+
+            // --- 2. Add OpenSeaMap Overlay Layer ---
+            // This layer contains the nautical information like buoys, lighthouses, depth contours.
+            // Note: OpenSeaMap tile server can sometimes be less reliable or slower than OSM's.
+            L.tileLayer('http://tiles.openseamap.org/seamark/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="http://www.openseamap.org">OpenSeaMap</a>',
+                maxZoom: 18,
+                transparent: true // Important for an overlay layer
+            }).addTo(map);
+
+
+            // --- 3. Define Your Custom Points (GeoJSON Format) ---
+            // GeoJSON is a standard format for representing geographic features.
+            // Each "feature" can have "properties" to store details and links.
+            const myCustomPoints = {
+                "type": "FeatureCollection",
+                "features": [
+                    {
+                        "type": "Feature",
+                        "properties": {
+                            "name": "Historic Lighthouse",
+                            "description": "An iconic lighthouse marking the entrance to the bay. Offers stunning views.",
+                            "link": "https://en.wikipedia.org/wiki/List_of_lighthouses_in_Belgium",
+                            "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Oostende_-_Vuurtoren_Lange_Nelle.jpg/250px-Oostende_-_Vuurtoren_Lange_Nelle.jpg" // Optional image for popup
+                        },
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [2.909, 51.242] // [longitude, latitude] for Zeebrugge Lighthouse area
+                        }
+                    },
+                    {
+                        "type": "Feature",
+                        "properties": {
+                            "name": "Safe Anchorage A",
+                            "description": "A well-sheltered anchorage popular with cruisers. Good holding ground and calm waters.",
+                            "link": "https://www.google.com/search?q=safe+anchorage+example", // Placeholder link
+                            "iconUrl": "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png", // Example custom icon (blue)
+                            "iconSize": [25, 41],
+                            "iconAnchor": [12, 41],
+                            "popupAnchor": [1, -34]
+                        },
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [2.85, 51.3] // [longitude, latitude]
+                        }
+                    },
+                    {
+                        "type": "Feature",
+                        "properties": {
+                            "name": "Marina Royal Belgian Yacht Club",
+                            "description": "Full-service marina with fuel, water, and repair facilities. Close to town for provisions.",
+                            "link": "https://www.rbyc.be/en/marina/",
+                            "iconUrl": "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png", // Example custom icon (red)
+                            "iconSize": [25, 41],
+                            "iconAnchor": [12, 41],
+                            "popupAnchor": [1, -34]
+                        },
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [2.934, 51.229] // [longitude, latitude] for Nieuwpoort
+                        }
+                    },
+                     {
+                        "type": "Feature",
+                        "properties": {
+                            "name": "Small Fishing Village Port",
+                            "description": "Charming village port, limited services but authentic atmosphere.",
+                            "link": "https://www.google.com/search?q=small+fishing+port+example", // Placeholder link
+                            "iconUrl": "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png", // Example custom icon (green)
+                            "iconSize": [25, 41],
+                            "iconAnchor": [12, 41],
+                            "popupAnchor": [1, -34]
+                        },
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [3.2, 51.35] // [longitude, latitude]
+                        }
+                    }
+                ]
+            };
+
+            // --- 4. Add Custom Points to the Map with Popups ---
+            L.geoJSON(myCustomPoints, {
+                // Function to customize how each point is created (e.g., custom icons)
+                pointToLayer: function (feature, latlng) {
+                    if (feature.properties.iconUrl) {
+                        // Create a custom icon if specified in properties
+                        const customIcon = L.icon({
+                            iconUrl: feature.properties.iconUrl,
+                            iconSize: feature.properties.iconSize || [25, 41],
+                            iconAnchor: feature.properties.iconAnchor || [12, 41],
+                            popupAnchor: feature.properties.popupAnchor || [1, -34]
+                        });
+                        return L.marker(latlng, { icon: customIcon });
+                    }
+                    return L.marker(latlng); // Use default Leaflet marker if no custom icon
+                },
+                // Function to run for each feature when it's added to the map (e.g., bind popups)
+                onEachFeature: function (feature, layer) {
+                    let popupContent = `<h3>${feature.properties.name || 'Unnamed Location'}</h3>`;
+
+                    if (feature.properties.image) {
+                        // Placeholder image with alt text for accessibility and fallbacks
+                        popupContent += `<img src="${feature.properties.image}" alt="Image of ${feature.properties.name}" 
+                                            onerror="this.onerror=null;this.src='https://placehold.co/200x150/EEEEEE/AAAAAA?text=No+Image';" 
+                                            style="max-width:200px; height:auto; margin-bottom: 10px;"><br>`;
+                    }
+
+                    if (feature.properties.description) {
+                        popupContent += `<p>${feature.properties.description}</p>`;
+                    }
+
+                    if (feature.properties.link) {
+                        popupContent += `<p><a href="${feature.properties.link}" target="_blank">More Information</a></p>`;
+                    }
+
+                    layer.bindPopup(popupContent);
+                }
+            }).addTo(map);
+
+            // Optional: Add a layer control to toggle layers
+            const baseMaps = {
+                "OpenStreetMap": L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }),
+            };
+
+            const overlayMaps = {
+                "OpenSeaMap": L.tileLayer('http://tiles.openseamap.org/seamark/{z}/{x}/{y}.png', { transparent: true, maxZoom: 18 }),
+                "Custom Points": L.geoJSON(myCustomPoints, { // Add custom points to layer control
+                    pointToLayer: function (feature, latlng) {
+                        if (feature.properties.iconUrl) {
+                            const customIcon = L.icon({
+                                iconUrl: feature.properties.iconUrl,
+                                iconSize: feature.properties.iconSize || [25, 41],
+                                iconAnchor: feature.properties.iconAnchor || [12, 41],
+                                popupAnchor: feature.properties.popupAnchor || [1, -34]
+                            });
+                            return L.marker(latlng, { icon: customIcon });
+                        }
+                        return L.marker(latlng);
+                    },
+                    onEachFeature: function (feature, layer) {
+                        let popupContent = `<h3>${feature.properties.name || 'Unnamed Location'}</h3>`;
+                        if (feature.properties.image) {
+                            popupContent += `<img src="${feature.properties.image}" alt="Image of ${feature.properties.name}" 
+                                                onerror="this.onerror=null;this.src='https://placehold.co/200x150/EEEEEE/AAAAAA?text=No+Image';" 
+                                                style="max-width:200px; height:auto; margin-bottom: 10px;"><br>`;
+                        }
+                        if (feature.properties.description) {
+                            popupContent += `<p>${feature.properties.description}</p>`;
+                        }
+                        if (feature.properties.link) {
+                            popupContent += `<p><a href="${feature.properties.link}" target="_blank">More Information</a></p>`;
+                        }
+                        layer.bindPopup(popupContent);
+                    }
+                })
+            };
+
+            L.control.layers(baseMaps, overlayMaps).addTo(map);
+        });
+    </script>
+</body>
+</html>
