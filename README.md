@@ -10,3 +10,6 @@ in the "BSAC File Uploads" project on Jim's Google account.
 
 It is vital that the thumbnail is stored in exactly "Shipname.jpg", where shipname is the exact name i.e. where ship name is "Cape York" in the table,
 the file must be named as "Cape York.jpg" in GC Storage.
+
+
+gsutil cp wreckDatabase.csv gs://buchan-divers-wreck-database/wreckDatabase.csv

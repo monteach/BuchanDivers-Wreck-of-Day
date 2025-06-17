@@ -7,6 +7,10 @@
 
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <!-- Leaflet.markercluster CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css"/>
+
 
     <!-- Custom CSS for map container -->
     <style>
@@ -34,15 +38,16 @@
         }
         .leaflet-popup-content {
             font-size: 14px;
-            line-height: 1.5;
+            line-height: 1.5; /* Keeps text lines within a paragraph compact */
         }
         .leaflet-popup-content h3 {
             margin-top: 0;
+            margin-bottom: 5px; /* Added small margin for separation after heading */
             color: #34495e;
             font-size: 1.2em;
         }
         .leaflet-popup-content p {
-            margin-bottom: 5px;
+            margin-bottom: 2px; /* Retained, though data fields now use <br> */
         }
         .leaflet-popup-content a {
             color: #3498db;
@@ -54,7 +59,7 @@
         }
         .leaflet-popup-content img {
             border-radius: 4px;
-            max-width: 100%; /* Ensure images fit within popup */
+            max-width: 90%; /* Changed from 80% to 90% */
             height: auto;
             display: block;
             margin: 0 auto 10px auto;
@@ -81,19 +86,27 @@
             border-radius: 12px; /* Match map border-radius */
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-        /* Custom tooltip styling for permanent labels (REMOVED) */
-        /* .leaflet-tooltip.leaflet-tooltip-bottom {
-            background-color: rgba(255, 255, 255, 0.9);
-            color: #333;
-            border: 1px solid #ccc;
-            padding: 3px 6px;
+        /* Custom tooltip styling for permanent labels */
+        .leaflet-tooltip {
+            background-color: transparent !important; /* Transparent background */
+            border: none !important; /* No border */
+            box-shadow: none !important; /* No shadow */
+            color: black !important; /* Black text */
+            padding: 0 !important; /* No padding */
             font-size: 0.9em;
             font-weight: bold;
-            white-space: nowrap;
-            border-radius: 4px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-            opacity: 1 !important;
-        } */
+            white-space: nowrap; /* Prevent text wrapping */
+            opacity: 1 !important; /* Ensure it's always visible by default for individual markers */
+            pointer-events: none; /* Make it non-interactive, allows clicking map through it */
+        }
+        /* Remove the arrow (tip) for the tooltip */
+        .leaflet-tooltip.leaflet-tooltip-bottom:before,
+        .leaflet-tooltip.leaflet-tooltip-top:before,
+        .leaflet-tooltip.leaflet-tooltip-left:before,
+        .leaflet-tooltip.leaflet-tooltip-right:before {
+            border: none !important;
+        }
+
 
         /* Basic responsiveness */
         @media (max-width: 768px) {
@@ -113,6 +126,8 @@
 
     <!-- Leaflet JavaScript -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Leaflet.markercluster JavaScript -->
+    <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
 
     <script>
         // Function to convert "DD MM.mmmQ" to decimal degrees
@@ -139,6 +154,7 @@
             return decimal;
         }
 
+
         // Wrap the map initialization and logic inside window.onload to ensure Leaflet is fully loaded
         window.onload = function() {
             // Debugging check: Confirm Leaflet's L object is available
@@ -153,11 +169,22 @@
                 console.log("Leaflet (L) is defined. Proceeding with map initialization.");
             }
 
+            // Debugging check: Confirm MarkerCluster is available
+            if (typeof L.markerClusterGroup === 'undefined') {
+                console.error("Leaflet.markercluster library is not defined. It might not have loaded correctly.");
+                const mapDiv = document.getElementById('map');
+                if (mapDiv) {
+                    mapDiv.innerHTML = '<p style="text-align: center; color: red;">Error: Marker clustering library failed to load. Please check your internet connection and browser console.</p>';
+                }
+                return;
+            }
+
+
             const loadingOverlay = document.getElementById('loadingOverlay');
 
             // Initialize the map
-            // Centered on Peterhead, Scotland [latitude, longitude] and zoom level (9 is a good starting point for a regional view)
-            const map = L.map('map').setView([57.5091, -1.7832], 9); // Centered on Peterhead, Scotland
+            // Centered on Peterhead, Scotland [latitude, longitude] and zoom level (increased to 10)
+            const map = L.map('map').setView([57.5091, -1.7832], 10); // Initial zoom level changed from 9 to 10
 
             // --- 1. Add OpenStreetMap Base Layer ---
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -182,10 +209,18 @@
                     {
                         "type": "Feature",
                         "properties": {
-                            "name": "Sample Wreck (Fallback)",
-                            "description": "This is a fallback wreck entry, shown because the CSV data could not be loaded. Please check browser console for CORS errors and Google Storage bucket settings.",
-                            "link": "https://www.google.com/search?q=sample+wreck",
-                            "iconUrl": "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-grey.png" // Grey icon for fallback
+                            "Name": "Sample Wreck (Fallback)",
+                            "Nationality": "Unknown",
+                            "Type": "Cargo",
+                            "Build Date": "1900",
+                            "Tonnage": "1500",
+                            "Date of Loss": "1918-10-25",
+                            "Cause of Loss": "Torpedoed",
+                            "Depth": "30m",
+                            "iconUrl": "https://storage.googleapis.com/buchan-divers-wreck-thumbnails/Sample Wreck (Fallback).jpg", // Fallback image for image URL
+                            "iconSize": [32, 32], // Standard size for this icon
+                            "iconAnchor": [16, 32], // Anchor for bottom-center
+                            "popupAnchor": [0, -32] // Popup anchor relative to iconAnchor
                         },
                         "geometry": {
                             "type": "Point",
@@ -194,6 +229,9 @@
                     }
                 ]
             };
+
+            // Initialize MarkerClusterGroup
+            const markers = L.markerClusterGroup();
 
 
             // --- Function to fetch and process CSV data ---
@@ -220,30 +258,42 @@
                         parsedWreckData = myWreckDataFallback; // Fallback to example data if CSV is empty
                     } else {
                         const headers = lines[0].split(',').map(header => header.trim());
+
+                        // Get column indices for all required fields
                         const nameColIndex = headers.indexOf('Name');
+                        const natColIndex = headers.indexOf('Nationality');
+                        const typeColIndex = headers.indexOf('Type');
+                        const buildDateColIndex = headers.indexOf('Build Date');
+                        const tonnageColIndex = headers.indexOf('Tonnage');
+                        const dateLossColIndex = headers.indexOf('Date of Loss');
+                        const causeLossColIndex = headers.indexOf('Cause of Loss');
+                        const depthColIndex = headers.indexOf('Depth');
                         const latColIndex = headers.indexOf('Lat');
                         const longColIndex = headers.indexOf('Long');
 
-                        if (nameColIndex === -1 || latColIndex === -1 || longColIndex === -1) {
-                            console.warn("Required columns (Name, Lat, Long) not found in CSV header. Using fallback data.");
-                            parsedWreckData = myWreckDataFallback; // Fallback if headers are missing
+                        // Check if all essential columns are present
+                        const essentialCols = [nameColIndex, latColIndex, longColIndex];
+                        if (essentialCols.some(idx => idx === -1)) {
+                            console.warn("One or more essential columns (Name, Lat, Long) not found in CSV header. Using fallback data.");
+                            parsedWreckData = myWreckDataFallback; // Fallback if essential headers are missing
                         } else {
                             const geoJsonFeatures = [];
                             for (let i = 1; i < lines.length; i++) {
                                 const line = lines[i].trim();
                                 if (!line) continue; // Skip empty lines
 
-                                const values = line.split(',');
-                                // Ensure values array has enough elements and non-empty values for required columns
-                                if (values.length <= Math.max(nameColIndex, latColIndex, longColIndex) ||
-                                    !values[nameColIndex] || !values[latColIndex] || !values[longColIndex]) {
-                                    console.warn(`Skipping malformed or incomplete line: ${line}`);
+                                // Split values and ensure all are trimmed to avoid empty strings with just whitespace
+                                const values = line.split(',').map(val => val ? val.trim() : '');
+
+                                // Basic check for sufficient number of columns
+                                if (values.length <= Math.max(nameColIndex, latColIndex, longColIndex)) {
+                                    console.warn(`Skipping malformed or incomplete line (insufficient columns): ${line}`);
                                     continue;
                                 }
 
-                                const name = values[nameColIndex].trim();
-                                const latStr = values[latColIndex].trim();
-                                const longStr = values[longColIndex].trim();
+                                const name = values[nameColIndex] || "Unknown Wreck"; // Name should always be present as essential
+                                const latStr = values[latColIndex];
+                                const longStr = values[longColIndex];
 
                                 const latitude = convertDMQToDecimal(latStr);
                                 const longitude = convertDMQToDecimal(longStr);
@@ -252,21 +302,28 @@
                                     geoJsonFeatures.push({
                                         "type": "Feature",
                                         "properties": {
-                                            "name": name || "Unknown Wreck",
-                                            "description": `Original: ${latStr}, ${longStr}<br>Decimal: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`,
-                                            "link": `https://www.google.com/maps?q=${latitude},${longitude}`,
-                                            "iconUrl": "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-black.png",
-                                            "iconSize": [25, 41],
-                                            "iconAnchor": [12, 41],
-                                            "popupAnchor": [1, -34]
+                                            "name": name,
+                                            // Assign all fields from CSV to properties
+                                            // Use empty string for optional fields if not present
+                                            "Nationality": values[natColIndex] || '',
+                                            "Type": values[typeColIndex] || '',
+                                            "Build Date": values[buildDateColIndex] || '',
+                                            "Tonnage": values[tonnageColIndex] || '',
+                                            "Date of Loss": values[dateLossColIndex] || '',
+                                            "Cause of Loss": values[causeLossColIndex] || '',
+                                            "Depth": values[depthColIndex] || '',
+                                            "iconUrl": "https://storage.googleapis.com/buchan-divers-wreck-database/wreck_icon.png",
+                                            "iconSize": [32, 32],
+                                            "iconAnchor": [16, 32],
+                                            "popupAnchor": [0, -32]
                                         },
                                         "geometry": {
                                             "type": "Point",
-                                            "coordinates": [longitude, latitude] // GeoJSON is [longitude, latitude]
+                                            "coordinates": [longitude, latitude]
                                         }
                                     });
                                 } else {
-                                    console.warn(`Could not parse coordinates for: Name: ${name}, Lat: '${latStr}', Long: '${longStr}'`);
+                                    console.warn(`Could not parse coordinates for: Name: ${name}, Lat: '${latStr}', Long: '${longStr}'. Skipping point.`);
                                 }
                             }
                             parsedWreckData = { "type": "FeatureCollection", "features": geoJsonFeatures };
@@ -297,39 +354,79 @@
                                 pointToLayer: function (feature, latlng) {
                                     const customIcon = L.icon({
                                         iconUrl: feature.properties.iconUrl,
-                                        iconSize: feature.properties.iconSize || [25, 41],
-                                        iconAnchor: feature.properties.iconAnchor || [12, 41],
-                                        popupAnchor: feature.properties.popupAnchor || [1, -34]
+                                        iconSize: feature.properties.iconSize || [32, 32],
+                                        iconAnchor: feature.properties.iconAnchor || [16, 32],
+                                        popupAnchor: feature.properties.popupAnchor || [0, -32]
                                     });
-                                    // Create the marker
                                     const marker = L.marker(latlng, { icon: customIcon });
 
-                                    // Removed permanent tooltip binding:
-                                    // if (feature.properties.name) {
-                                    //     marker.bindTooltip(feature.properties.name, {
-                                    //         permanent: true,
-                                    //         direction: 'bottom',
-                                    //         className: 'wreck-label'
-                                    //     }).openTooltip();
-                                    // }
+                                    // Bind the permanent tooltip (label)
+                                    if (feature.properties.name) {
+                                        marker.bindTooltip(feature.properties.name, {
+                                            permanent: true,
+                                            direction: 'right',
+                                            offset: [10, -10],
+                                            className: 'plain-label'
+                                        }).openTooltip();
+                                    }
 
                                     return marker;
                                 },
                                 onEachFeature: function (feature, layer) {
-                                    let popupContent = `<h3>${feature.properties.name}</h3>`;
-                                    if (feature.properties.description) {
-                                        popupContent += `<p>${feature.properties.description}</p>`;
-                                    }
-                                    if (feature.properties.link) {
-                                        popupContent += `<p><a href="${feature.properties.link}" target="_blank">View on Google Maps</a></p>`;
-                                    }
+                                    // Construct the URL for the wreck name hyperlink
+                                    // Replace both spaces and periods with hyphens
+                                    const wreckNameForUrl = feature.properties.name.replace(/[\s.]+/g, '-').toLowerCase();
+                                    const wreckPageUrl = `https://www.buchandivers.com/wrecks/${wreckNameForUrl}`;
+
+                                    // Construct the image URL
+                                    const imageUrl = `https://storage.googleapis.com/buchan-divers-wreck-thumbnails/${encodeURIComponent(feature.properties.name)}.jpg`;
+                                    // Fallback placeholder image in case the actual image doesn't load
+                                    const placeholderImageUrl = `https://placehold.co/200x150/EEEEEE/AAAAAA?text=No+Image`;
+
+                                    let popupContent = '';
+
+                                    // Log the image URL to the console for debugging
+                                    console.log(`Attempting to load image for "${feature.properties.name}": ${imageUrl}`);
+
+                                    // Add image at the top of the popup
+                                    popupContent += `<img src="${imageUrl}" alt="Image of ${feature.properties.name}"
+                                                        onerror="this.onerror=null;this.src='${placeholderImageUrl}';"
+                                                        style="max-width:100%; height:auto; display:block; margin: 0 auto 10px auto; border-radius:4px;"><br>`;
+
+
+                                    // Add the name as a hyperlink
+                                    popupContent += `<h3><a href="${wreckPageUrl}" target="_blank">${feature.properties.name || 'Unnamed Wreck'}</a></h3>`;
+
+                                    // Helper function to add a field if it's not empty or 'N/A'
+                                    const addField = (label, value) => {
+                                        const trimmedValue = value ? String(value).trim() : '';
+                                        if (trimmedValue && trimmedValue !== 'N/A') {
+                                            popupContent += `<strong>${label}:</strong> ${trimmedValue}<br>`;
+                                        }
+                                    };
+
+                                    addField('Nationality', feature.properties.Nationality);
+                                    addField('Type', feature.properties.Type);
+                                    addField('Build Date', feature.properties['Build Date']);
+                                    addField('Tonnage', feature.properties.Tonnage);
+                                    addField('Date of Loss', feature.properties['Date of Loss']);
+                                    addField('Cause of Loss', feature.properties['Cause of Loss']);
+                                    addField('Depth', feature.properties.Depth);
+
+                                    // Bind the popup to the layer (removed maxWidth option)
                                     layer.bindPopup(popupContent);
                                 }
                             }
-                        ).addTo(map);
+                        ); // Do NOT add to map directly here
 
-                        // Add the new wreck layer to the layer control
-                        overlayMaps["Wreck Database"] = wreckLayer;
+                        // Add the wreckLayer (GeoJSON group) to the MarkerClusterGroup
+                        markers.addLayer(wreckLayer);
+
+                        // Add the MarkerClusterGroup to the map
+                        map.addLayer(markers);
+
+                        // Add the MarkerClusterGroup to the layer control
+                        overlayMaps["Wreck Database"] = markers; // Now the layer control toggles the cluster group
                         updateLayerControl();
                     }
                 }
@@ -343,107 +440,6 @@
             const overlayMaps = {
                 "OpenSeaMap": L.tileLayer('http://tiles.openseamap.org/seamark/{z}/{x}/{y}.png', { transparent: true, maxZoom: 18 }),
             };
-
-            // Original custom points (now separate layer)
-            const myOriginalCustomPoints = {
-                "type": "FeatureCollection",
-                "features": [
-                    {
-                        "type": "Feature",
-                        "properties": {
-                            "name": "Historic Lighthouse (Belgium)",
-                            "description": "An iconic lighthouse marking the entrance to the bay. Offers stunning views.",
-                            "link": "https://en.wikipedia.org/wiki/List_of_lighthouses_in_Belgium",
-                            "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Oostende_-_Vuurtoren_Lange_Nelle.jpg/250px-Oostende_-_Vuurtoren_Lange_Nelle.jpg",
-                            "iconUrl": "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-violet.png" // Distinct icon for original points
-                        },
-                        "geometry": {
-                            "type": "Point",
-                            "coordinates": [2.909, 51.242]
-                        }
-                    },
-                    {
-                        "type": "Feature",
-                        "properties": {
-                            "name": "Safe Anchorage A (Belgium)",
-                            "description": "A well-sheltered anchorage popular with cruisers. Good holding ground and calm waters.",
-                            "link": "https://www.google.com/search?q=safe+anchorage+example",
-                            "iconUrl": "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png",
-                            "iconSize": [25, 41],
-                            "iconAnchor": [12, 41],
-                            "popupAnchor": [1, -34]
-                        },
-                        "geometry": {
-                            "type": "Point",
-                            "coordinates": [2.85, 51.3]
-                        }
-                    },
-                    {
-                        "type": "Feature",
-                        "properties": {
-                            "name": "Marina Royal Belgian Yacht Club",
-                            "description": "Full-service marina with fuel, water, and repair facilities. Close to town for provisions.",
-                            "link": "https://www.rbyc.be/en/marina/",
-                            "iconUrl": "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png",
-                            "iconSize": [25, 41],
-                            "iconAnchor": [12, 41],
-                            "popupAnchor": [1, -34]
-                        },
-                        "geometry": {
-                            "type": "Point",
-                            "coordinates": [2.934, 51.229]
-                        }
-                    },
-                     {
-                        "type": "Feature",
-                        "properties": {
-                            "name": "Small Fishing Village Port (Belgium)",
-                            "description": "Charming village port, limited services but authentic atmosphere.",
-                            "link": "https://www.google.com/search?q=small+fishing+port+example",
-                            "iconUrl": "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png",
-                            "iconSize": [25, 41],
-                            "iconAnchor": [12, 41],
-                            "popupAnchor": [1, -34]
-                        },
-                        "geometry": {
-                            "type": "Point",
-                            "coordinates": [3.2, 51.35]
-                        }
-                    }
-                ]
-            };
-
-            const originalCustomPointsLayer = L.geoJSON(myOriginalCustomPoints, {
-                pointToLayer: function (feature, latlng) {
-                    if (feature.properties.iconUrl) {
-                        const customIcon = L.icon({
-                            iconUrl: feature.properties.iconUrl,
-                            iconSize: feature.properties.iconSize || [25, 41],
-                            iconAnchor: feature.properties.iconAnchor || [12, 41],
-                            popupAnchor: feature.properties.popupAnchor || [1, -34]
-                        });
-                        return L.marker(latlng, { icon: customIcon });
-                    }
-                    return L.marker(latlng);
-                },
-                onEachFeature: function (feature, layer) {
-                    let popupContent = `<h3>${feature.properties.name || 'Unnamed Location'}</h3>`;
-                    if (feature.properties.image) {
-                        popupContent += `<img src="${feature.properties.image}" alt="Image of ${feature.properties.name}"
-                                            onerror="this.onerror=null;this.src='https://placehold.co/200x150/EEEEEE/AAAAAA?text=No+Image';"
-                                            style="max-width:200px; height:auto; margin-bottom: 10px;"><br>`;
-                    }
-                    if (feature.properties.description) {
-                        popupContent += `<p>${feature.properties.description}</p>`;
-                    }
-                    if (feature.properties.link) {
-                        popupContent += `<p><a href="${feature.properties.link}" target="_blank">More Information</a></p>`;
-                    }
-                    layer.bindPopup(popupContent);
-                }
-            }).addTo(map); // Add these points directly to map initially
-
-            overlayMaps["Original Custom Points"] = originalCustomPointsLayer; // Add to layer control
 
             // Function to update the layer control. This is important because the wreck data is loaded asynchronously.
             let layerControl = null; // Variable to hold the layer control instance
@@ -465,3 +461,4 @@
     </script>
 </body>
 </html>
+
