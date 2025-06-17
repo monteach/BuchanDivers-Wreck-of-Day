@@ -1,156 +1,346 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+    <style>
+        :root {
+            --font-family: 'Lato', sans-serif;
+            --title-color: rgba(34, 110, 147, 1);
+            --text-color: black;
+            --link-color: #3498db;
+        }
+
+        body {
+            font-family: var(--font-family);
+            margin: 20px;
+            background-color: white; /* Stays white */
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            /* Removed align-items: center; to allow default left alignment for blocks */
+        }
+
+        h2.titleFormat {
+            font-family: var(--font-family);
+            font-size: 17px;
+            font-weight: bold;
+            color: var(--title-color);
+            margin-bottom: 10px;
+            text-align: center; /* Changed back to center */
+            max-width: 600px; /* Constrain width to match other content blocks */
+            margin: 0 auto 10px auto; /* Centered the block itself with auto margins */
+        }
+
+        p.bodyFormat {
+            font-family: var(--font-family);
+            font-size: 15px;
+            font-weight: normal;
+            color: var(--text-color);
+            line-height: 1.6;
+            max-width: 600px; /* Constrain width for better reading */
+            margin: 0 auto 15px auto; /* Center the block itself, text inside is left aligned */
+            text-align: left; /* Left align the text within this block */
+        }
+
+        .imgContainer {
+            width: 100%;
+            max-width: 600px; /* Matched to text max-width */
+            margin-bottom: 20px;
+            overflow: hidden; /* Ensure image doesn't overflow container */
+            border-radius: 8px; /* Rounded corners for image container */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for image */
+            margin: 0 auto; /* Ensure image container is centered */
+        }
+
+        .imgFormat {
+            max-width: 100%;
+            max-height: 100%;
+            height: auto; /* Maintain aspect ratio */
+            display: block; /* Remove extra space below image */
+            border-radius: 4px; /* Slightly rounded image corners */
+            object-fit: cover; /* Cover the container without distortion if container has fixed height */
+            margin: 0 auto; /* Ensures image is centered within imgContainer */
+        }
+
+        /* Styling for hyperlinks */
+        a {
+            color: var(--link-color);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        #loadingMessage {
+            text-align: center;
+            padding: 20px;
+            font-size: 1.1em;
+            color: #555;
+        }
+
+    </style>
+    <title>Wreck of the Day</title>
+</head>
+
 <body>
-<link rel="stylesheet"
-          href="https://fonts.googleapis.com/css?family=Lato">
-          
-<style>
-  .titleFormat
-    {
-      font-family:    Lato;
-      font-size:      17px;
-      font-weight:    bold;
-      color:		  rgba(34,110,147,1)
-    }
-  .bodyFormat
-    {
-      font-family:    Lato;
-      font-size:      15px;
-      font-weight:    normal;
-      color:		  black;
-    }
-    .imgFormat {
-      max-width: 100%;
-      max-height: 100%;
-	}
+    <h2 id="title" class="titleFormat">Loading...</h2>
+    
+    <div id="loadingMessage">Loading wreck data...</div>
 
-</style>
-
-    <h2 id="title" class="titleFormat">Wreck of the day:</h2>
-
-    <p id="wreckText" class="bodyFormat"></p>
-
-	<img id="wreckImage" class="imgFormat" src='https://drive.google.com/uc?export=view&id=1dUQ3PQvtqBm-RvVFPk-yTOGtkkLwhTkp'> 
-  
+    <div id="content" style="display: none;"> <!-- Content hidden until loaded -->
+        <div class="imgContainer">
+            <img id="wreckImage" class="imgFormat" alt="Wreck Image">
+        </div>
+        <p id="wreckText" class="bodyFormat"></p>
+    </div>
 
 <script>
-/* table of all wrecks including link details and thumbnail picture sources, thumbnails must be stored in Google Cloud Storage
-   thumbnail bucket in jim's account, under the BSAC File Uploads project, in a storage bucket
-   https://console.cloud.google.com/storage/browser/buchan-shipwrecks-wreck-thumbnails;tab=objects?forceOnBucketsSortingFiltering=true&hl=en-au&inv=1&invt=Abz_TA&project=bsac-file-uploads&prefix=&forceOnObjectsSortingFiltering=false
-   thumbnails must be stored exactly as the wreck name.jpg including caps and spacing
-*/
-
-var wreckList = [
-
-//name, day, month, year, wreck link, wreck of the day text
-["Aberdeenshire",21,10,1910,"This Aberdeen registered fishing trawler ran aground in heavy weather one mile south of Boddam, all 9 crew were rescued by breeches buoy.  She now lies, badly broken up, in about 14m of water."],
-["Adventure",6,1,1922,"This Peterhead registered trawler struck a leftover WW1 mine which exploded midships and sank the vessel.  All her crew got off safely into another trawler.  She now lies at a depth of 71m."],
-["Anvers",13,11,1940,"A Belgian registered cargo ship carying scrap steel and bound for Methil, Fife.  She was bombed by German aircraft with the loss of 20 of her crew.  She now lies in 52m of water."],
-["Astronomer",2,6,1940,"A Liverpool registered cargo ship, she was carying boom equipment for use at the naval base in Scapa Flow, Orkney.  She was sunk by torpedoes from the U 58 with the loss of 5 of her crew, she now lies in 67m."],
-["Atland",25,3,1943,"A Swedish registered cargo vessel of a unique \"Turret\" design.  She was carying iron ore, bound for Methil in Fife, when she collided with another ship in her convoy and sank with the loss of 19 of her crew.  She now lies in 64m."],
-["Bel Lily",14,5,1917,"A Grimsby registered trawler which hit a mine laid by UC 49 while fishing off Peterhead.  All 10 of her crew were lost in the sinking.  She now lies in 44m."],
-["Bretagne",17,4,1917,"Registered in Copenhagen, she was carying a cargo of coal from North Sheilds to Copenhagen when she was attacked by the U 45 and sunk by gunfire and torpedo.  All of the crew were rescued. She now lies in 61m."],
-["Caersin",28,11,1926,"A german built trawler, she was taken as a prize ship by HMS Penelope in WWI and used by the admiralty for war duties.  She was sold and returned to trawling service after the war but sank while under tow after a collision.  She now lies in 40m"],
-["Cairnavon",1,11,1925,"She ran aground in dense fog while en route from Leith to Montreal with a general cargo, including coal, coke, rags and manganese.  All passengers and crew were rescued.  She now lies in 18m."],
-["Cairnmona",30,10,1939,"Registered in Newcastle-upon-Tyne and a member of the Cairn line, she held a cargo of wool, gain, copper and zinc bound from Montreal to Leith when she was sunk by a torpedo from the U-13.  Three of the crew were lost.  She now lies in 51m."],
-["Cape York",27,8,1940,"Registered in Glasgow, she was loaded with grain, wood and lead ingots and bount for Methil, Fife, she was bombed JU88 bombers from Aalsburg.  She no lies in 93m."],
-["Charles Goodanew",17,4,1917,"Registered in Plymouth as an admiralty stores carrier, she was en route to the military base in Scapa Flow with a cargo of government stores when she was sunk by a mine laid by UC 45.  Only two of her crew of 15 survived.  She now lies in 52m."],
-["Chicago",10,10,1894,"A Sunderland registered cargo vessel, she was heading for Baltimore with a cargo of cement, pickled herrings and wine hen she ran aground on the rocks below New Slains Castle.  All of her crew were saved.  She now lies in 13m."],
-["City of Osaka",23,9,1930,"A Liverpool registered cargo ship, she was carying a load of timber and bound for New York when she ran aground in thick fog.  All her rew were saved.  She now lies, broken up, in 12m.."],
-["Constant Star",27,8,1987,"A Peterhead registered fishing vessel, she was heading home to avoid bad weather when she ran aground on Skerry Rock just outside Peterhead harbour.  All her crew were saved by the lifeboat.  She now lies, broken up, in 15m."],
-["Crisabelle Stephen",16,1,1939,"An Aberdeen registered trawler, she was rescued after running aground near Cruden Scaurs however she capsized while on tow back to Aberdeen with the loss of all 9 of her crew."],
-["Dungonnell",24,2,1903,"A Glasgow registered cargo vessel, she was carying a load of telegraph poles from Shields, bound for Belfast in February, 1903.  She and her crew were never seen again."],
-["Einar",16,8,1893,"A Norwegian cargo vessel, she ran aground in fog while en route from Middlesbrough to Iceland with a cargo of salt.  She now lies in 8m."],
-["Flotta",6,11,1941,"A Royal Navy Isles Class minesweeper, she ran aground and was refloated a week later, however she soon foundered with the loss of 5 of her fourteen crew.  She now lies in 62m."],
-["Fort Royal",9,2,1940,"Originally built as a trawler, she was requisitioned by the Royal Navy in 1939 and converted into an Aberdeen based minesweeper to patrol the north east of Scotland.  She was lost in an enemy aircraft raid and now lies in 63m."],
-["Fram",1,2,1940,"A Swedish registered cargo ship in ballast and sheltering from weather in Aberdour Bay, she was torpedoed by the U-13 and sank in two halves, with the loss of 10 of her 25 crew.  The bow lies in 37m, the stern in 46m."],
-["Friedrich Bolte",16,2,1941,"A German registered trawler which foundered six miles east of the Cruden Scares, the fate of her crew is unknown.  She now lies in 66m."],
-["Gelsina",25,6,1917,"A Grimsby registered trawler, requisitioned as a minesweeper but hit a mine laid by the UC 40. Five of her crew were lost.  She now lies in 62m."],
-["Kathleen",26,1,1914,"Built in Belfast but registered in Aberdeen, she was lost with all hands in a gale whilst en route from Burghead to Middlesborough with a cargo of wood.  She now lies in 72m."],
-["Kildale",3,11,1940,"Registered in Whitby, she had loaded with sugar in the Dominican Republic and sailed accross the Atlantic in convoy.  She was en route to Methil, Fife when she was sunk by bombfire from German aircraft.  Two of her 37 crew were lost.  She now lies in 63m."],
-["Lord Nelson",22,11,1940,"An Icelandic trawler, she was off Peterhead when she collided with another trawler, the Northman.  She soon foundered and sank.  All of her crew were taken aboard the Northman.  She now lies in 57m."],
-["Maria W",22,2,1966,"A Dutch registered cargo vessel.  She was en route from Ghent to Scrabster carrying fertiliser when she became lost in thick fog.  She was blown stern first into Sandy Haven having struck the Skares and lost her propeller,  she became a total loss and now lies broken up and dispersed in 6m."],
-["Mercator",1,12,1940,"A Finnish registered cargo ship, she sailed from Buenos Aires to Leith with a cargo of coffee, maize, linseed, casein and groundnut meal.  From Leith she departed for Helsinki and was torpedoed off Peterhead by the U-21.  All but one of her crew were saved.  She now lies in 82m."],
-["Muriel",17,12,1918,"Registered in Newport, UK she was en route from the Tyne to Scapa Flow with a cargo of coal. Whilst passing Peterhead at 11:20 am she was struck by a torpedo fired by UC 58.  All of her crew were rescued.  She now lies in 48m."],
-["Ormonde",16,2,1941,"A Grimsby registered trawler, she was requisitioned by the Admiralty as an armed mine-sweeper.  She was patrolling off Cruden Bay when she was attacked and sunk by German aircraft.  All of her crew perished.  She now lies in 60m."],
-["Parkhill",18,11,1939,"A Methil registered coaster, she was en-route from Blyth to Kirkwall with a cargo of coal when she was torpedoed by U-18 and lost with all hands off Kinnaird Head."],  
-["Prestonian",25,5,1915,"Registered in Preston, she was on a voyage from Archangel to Dundee with a cargo of flax and timber when she ran aground at Aberdour Bay.  She now lies in 15m."],
-["Remuera",16,8,1940,"One of our favourites, she was registered in Plymouth but built for the New Zealand Shipping Co. Ltd.  A large cargo liner, she was en route from Wellington and almost at her destination when she was attacked by aircraft and sunk by aerial torpedo.  All of the crew were rescued.  She now lies in 57m."],
-["Robert Bowen",9,2,1940,"An armed trawler working out of Aberdeen on minesweeping duties patrolling the North East coast.  She was operating just north of Aberdeen when she was discovered by enemy aircraft and sunk by a direct bomb hit, killing all onboard."],
-["Simonburn",20,10,1940,"A Newcastle registered cargo ship, she loaded with cargo in Montreal and was heading down the Buchan coast to Methil when she ran aground in a gale.  She was refloated but later foundered.  All of her crew were taken off by the Peterhead lifeboat.  She now lies on 54m."],
-["Sofie Bakke",4,8,1940,"A Swedish registered ship, she was bound for London with a general cargo loaded in South America when she collided with another ship in her convoy and sank.  All of her crew were rescued.  She now lies in 68m."],
-["St Clement",5,4,1941,"An Aberdeen registered passenger and cargo carrier operating the Aberdeen to Caithness route, she was bombed and sunk by German aircraft with the loss of one of her crew.  She now lies in 55m."],
-["St Fergus",31,12,1940,"An Aberdeen registered passenger and cargo carrier operating the Aberdeen to Stromness route, she collided with a much larger ship, the SS Lima, and sank with the loss of at least one of her crew.  She now lies in 77m."],
-["St Glen",6,9,1940,"A Newport registered cargo ship, she was en route from Freetown to Methil with a cargo of wheat and tinned corned beef when she was attacked and sunk by German aircraft.  Three of her crew were lost.  She now lies in 67m."],
-["St Magnus",12,2,1918,"The Aberdeen registered passenger and cargo carrier had sailed from Lerwick for Aberdeen and was just passing Peterhead when she was torpedoed by UC 58. Four of her passengers and one of her crew were lost.  She now lies in 49m."],
-["Svarton",3,1,1940,"The Stockholm registered cargo ship was en route from Narvik to Middlesborough when she was torpedoed by the U-58 off Kinnaird Head.  She now lies in 75m."],
-["Taylor",30,9,1937,"The Sunderland registered steam lighter was on a voyage from Buckie to Sunderland with a cargo of sleepers, when she capsized and foundered off Peterhead. Her captain survived and was picked up by the Grimsby steam trawler Ocean Princess, however the remaining five crew were lost.  She now lies in 58m."],
-["TIC No8",29,10,1911,"The bucket dredger barge was under tow from the Clyde to North Sheilds when the tow parted and she foundered in heavy seas 5 miles off Rattray Head.  All of her 5 crew were lost.  She now lies in 83m."],
-["Trevorian",29,11,1943,"The St Ives registered cargo ship was on a voyage from Hull to the Mediterranean when she collided with and Icelandic trawler and sank.  The fate of her crew is unknown.  She now lies in 76m."],
-["Trsat",7,9,1941,"Registered in Cardiff, she was a steam coaster on passage from Reykjavik to Hull with a cargo of 845 tons of fish when she was bombed by a single Luftwaffe aircraft off Kinnaird Head.   Three men were lost in the sinking.  She now lies in 68m."],
-["Tynemouth Castle",9,12,1939,"A Grimsby registered trawler, she struck the Cruden Scares and founderd 3 miles south east of Cruden Bay.  The fate of her crew is unknown, she now lies in 58m."],
-["U-1206",14,4,1945,"A type VII-C U-boat, she was on patrol off the Buchan coast when she was abandoned and scuttled.  All of the crew escaped in the liferafts and either made it ashore or were picked up by local boats.  Three of the crew lost their life attepting to scale the cliffs south of Boddam."],
-["U 77",7,7,1916,"A type UE 1 mine laying U-boat from WW1.  Lost, presumed in an accident, while on a mine laying mission off Kinnaird Head, Fraserburgh.  All of the crew were lost."],
-["Virgilia",3,6,1917,"A Grimsby registered trawler, sunk by the UC 77 after she was apprehended while fishing off Aberdeen"],
-["Windward Ho",9,5,1917,"A Hull registered trawler en route from Hull to the fishing grounds she detonated a German contact mine which had been laid by UC 49.  All eight crew were lost when she sank three miles SSE of Buchan Ness.  She now lies in 50m."],
-["Wrangler",6,10,1941,"A Southampton registered hopper-barge she was engaged in close-inshore salvage work to the north of Peterhead when she ran aground on the Girdle Wears and foundered.  She now lies 48m."],
-["Zitella",7,2,1940,"A London registered steam ship, she was outward bound from Narvik in Norway to Middlesborough with a cargo of iron ore in her hold and with 33 crew members on board when she ran aground in poor weather and fog at Longhaven, just south of Buchan Ness.  All of her crew were rescued and she now lies broken up in 10m."],
-    ]
-
-//use todays date to find which wreck to display
-let wreckDetails = findWreck();
-let wreckIndex = wreckDetails[0]; //pointer to the wreck in table to display
-let ageText = wreckDetails[1]; //number of years since sank
-let title = wreckDetails[2]; //formatted title page either wreck of day or anniversary
-//let srcPath = "https://drive.google.com/uc?export=view&id=" + wreckList[wreckIndex][4]  //
-let wreckImgRef = wreckList[wreckIndex][0].replace(/ /g, "%20")
-let srcPath = "https://storage.googleapis.com/buchan-shipwrecks-wreck-thumbnails/" + wreckImgRef + ".jpg"
-console.log("srcPath:", srcPath);
-let pagePath = "https://www.buchandivers.com/wrecks/" + wreckList[wreckIndex][0].replace(/ /g, "-").toLowerCase()
-
-//var paraText = "The " + "<a href=\"" + wreckList[wreckIndex][4] +"\">" + wreckList[wreckIndex][0] + "</a>" + " sank " + ageText + wreckList[wreckIndex][5];
-var paraText = "The " + "<a href=\"" + pagePath +"\">" + wreckList[wreckIndex][0] + "</a>" + " sank " + ageText + wreckList[wreckIndex][4];
-
-document.getElementById("title").innerHTML = title;
-document.getElementById("wreckText").innerHTML = paraText;
-document.getElementById("wreckImage").src = srcPath;
-
-function findWreck() {// returns index of wreck to display plus sinking anniversary text and title in 3 element array
-
-	var today = new Date();
-  //let today = new Date(1950, 5, 3)
-	var dayCount = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];  //cumulative days in year at start of month
-	var mn = today.getMonth();
-	var dn = today.getDate();
-  var yn = today.getYear() + 1900; //getYear returns year since 1900 so add 1900
-	var dayOfYear = dayCount[mn] + dn;
-    
-  //loop through table until wreck found with with day/month same as today
-
-  //test harness, to check if thumbnail can be loaded correctly
-  //mn = 4  //month numbers start at zero (jan - 0)
-  //dn = 14
-    
-  var index = 999;
-    
-	for (i = 0; i < wreckList.length; i++) {
-  		if (wreckList[i][1] == dn && wreckList[i][2] == mn + 1) {
-    	   	index = i;
+    // Global helper function to parse a date string (expected dd-mmm-yyyy) into a Date object
+    function parseDateString(date) {
+        if (!date) return new Date(0); // Return epoch start for empty/null dates
+        const months = {
+            "Jan": "01", "Feb": "02", "Mar": "03", "Apr": "04",
+            "May": "05", "Jun": "06", "Jul": "07", "Aug": "08",
+            "Sep": "09", "Oct": "10", "Nov": "11", "Dec": "12"
+        };
+        const parts = date.split('-');
+        if (parts.length === 3 && months[parts[1]]) {
+            // Attempt to parse dd-mmm-yyyy
+            const day = parts[0];
+            const month = months[parts[1]];
+            const year = parts[2];
+            return new Date(`${year}-${month}-${day}`);
         }
-	}
+        // Fallback for other formats or invalid dates
+        return new Date(date); // This might return "Invalid Date" if the format is truly unparseable
+    }
+
+    // Function to format a Date object into dd-mmm-yyyy string (for display purposes)
+    function formatDateToString(dateObj) {
+        if (!(dateObj instanceof Date) || isNaN(dateObj.getTime())) {
+            return ''; // Return empty string for invalid Date objects
+        }
+        const options = { day: '2-digit', month: 'short', year: 'numeric' };
+        return dateObj.toLocaleDateString('en-GB', options); // 'en-GB' ensures dd/mm/yyyy structure, month: 'short' for mmm
+    }
+
+    // Base URL for your CSV data
+    const baseCsvUrl = "https://storage.googleapis.com/buchan-divers-wreck-database/wreckDatabase.csv";
+    const thumbnailBucketUrl = "https://storage.googleapis.com/buchan-divers-wreck-thumbnails/";
     
-  if (index < 999) { //wreck sank this day was found
-    return [index, yn - wreckList[index][3] + " years ago today. ", "Wrecked on this day: " + wreckList[index][0]];
-  } else { //no wreck anniversary so choose any wreck based on day number mod num. wrecks
-    index = (dayOfYear) % wreckList.length;
-    var dateSinceSinking = yn - wreckList[index][3];
-    return [index, dateSinceSinking + " years ago. ", "Wreck of the day: " + wreckList[index][0]];
-  }
-    
-}
+    let allWrecksData = []; // Store the parsed CSV data globally
+
+    // Function to fetch and process CSV data
+    async function loadWreckDataForWreckOfTheDay() {
+        const loadingMessageElem = document.getElementById('loadingMessage');
+        const contentElem = document.getElementById('content');
+        const titleElem = document.getElementById('title');
+
+        loadingMessageElem.style.display = 'block';
+        contentElem.style.display = 'none';
+        titleElem.textContent = "Loading...";
+
+        try {
+            // Append a timestamp to the CSV URL to bypass caching
+            const csvUrlWithBuster = `${baseCsvUrl}?t=${new Date().getTime()}`;
+            console.log(`Fetching wreck data for Wreck of the Day from: ${csvUrlWithBuster}`);
+
+            const response = await fetch(csvUrlWithBuster);
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`HTTP error fetching CSV! Status: ${response.status}, Details: ${errorText}`);
+            }
+            const csvText = await response.text();
+
+            const lines = csvText.split('\n');
+            if (lines.length < 2) {
+                console.warn("CSV file is empty or only has a header.");
+                loadingMessageElem.textContent = "No wreck data found.";
+                return;
+            }
+
+            const headers = lines[0].split(',').map(header => header.trim());
+            
+            // Map headers to properties for easy access
+            const colMap = {
+                'Name': headers.indexOf('Name'),
+                'Date of Loss': headers.indexOf('Date of Loss'),
+                'Cause of Loss': headers.indexOf('Cause of Loss'),
+                'Depth': headers.indexOf('Depth'),
+                'WotD Comment': headers.indexOf('WotD Comment') // Added new column
+            };
+
+            // Check for essential columns
+            const essentialCols = ['Name', 'Date of Loss', 'WotD Comment']; // 'WotD Comment' is now essential for this module
+            if (essentialCols.some(col => colMap[col] === -1)) {
+                throw new Error(`Missing essential columns (${essentialCols.filter(col => colMap[col] === -1).join(', ')}) in CSV header.`);
+            }
+
+            allWrecksData = []; // Clear previous data
+            for (let i = 1; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (!line) continue;
+
+                // Robust CSV parsing for lines that might contain commas within quoted fields
+                const values = [];
+                let inQuote = false;
+                let currentField = '';
+                for (let charIndex = 0; charIndex < line.length; charIndex++) {
+                    const char = line[charIndex];
+
+                    if (char === '"') {
+                        inQuote = !inQuote;
+                    } else if (char === ',' && !inQuote) {
+                        values.push(currentField);
+                        currentField = '';
+                    } else {
+                        currentField += char;
+                    }
+                }
+                values.push(currentField); // Add the last field
+
+                const trimmedValues = values.map(val => val.trim());
+
+                const wreck = {};
+                for (const key in colMap) {
+                    if (colMap[key] !== -1 && trimmedValues[colMap[key]] !== undefined) {
+                        wreck[key] = trimmedValues[colMap[key]];
+                    } else {
+                        wreck[key] = ''; // Ensure all properties exist, even if empty
+                    }
+                }
+                allWrecksData.push(wreck);
+            }
+
+            displayWreckOfTheDay();
+
+        } catch (error) {
+            console.error("Error loading wreck data for Wreck of the Day:", error);
+            loadingMessageElem.innerHTML = `<p style="color: red; padding: 20px;">
+                <strong>Failed to load wreck data:</strong> ${error.message}.<br>
+                Please ensure the CSV file exists in your Google Storage bucket and has public read access, or that CORS is configured correctly.
+                Also, verify that the 'WotD Comment' column exists in your CSV.
+            </p>`;
+        } finally {
+            loadingMessageElem.style.display = 'none'; // Hide loading message
+            contentElem.style.display = 'block'; // Show content
+        }
+    }
+
+    // Function to find and display the wreck of the day
+    function displayWreckOfTheDay() {
+        if (allWrecksData.length === 0) {
+            document.getElementById("title").textContent = "No Wreck Data Available";
+            document.getElementById("wreckText").textContent = "Could not load wreck information.";
+            document.getElementById("wreckImage").src = `https://placehold.co/400x300/EEEEEE/AAAAAA?text=No+Image`;
+            return;
+        }
+
+        const today = new Date();
+        const currentDay = today.getDate();
+        // getMonth() returns 0-11, so add 1 for 1-12
+        const currentMonth = today.getMonth() + 1; 
+        const currentYear = today.getFullYear();
+        
+        let selectedWreck = null;
+        let isAnniversary = false;
+
+        // Try to find a wreck with an anniversary today
+        // Filter out wrecks that don't have a valid Date of Loss to avoid errors
+        const wrecksWithValidDates = allWrecksData.filter(wreck => {
+            const lossDate = parseDateString(wreck['Date of Loss']);
+            return !isNaN(lossDate.getTime());
+        });
+
+        for (let i = 0; i < wrecksWithValidDates.length; i++) {
+            const wreck = wrecksWithValidDates[i];
+            const lossDate = parseDateString(wreck['Date of Loss']);
+
+            if (lossDate.getDate() === currentDay && (lossDate.getMonth() + 1) === currentMonth) {
+                selectedWreck = wreck;
+                isAnniversary = true;
+                break; // Found an anniversary, use this one
+            }
+        }
+
+        if (!selectedWreck) {
+            // If no anniversary, pick one based on day of year
+            // Ensure we pick from wrecks with valid dates if available
+            const wrecksToChooseFrom = wrecksWithValidDates.length > 0 ? wrecksWithValidDates : allWrecksData;
+            
+            if (wrecksToChooseFrom.length === 0) {
+                document.getElementById("title").textContent = "No Wreck Data Available";
+                document.getElementById("wreckText").textContent = "Could not find any wreck information.";
+                document.getElementById("wreckImage").src = `https://placehold.co/400x300/EEEEEE/AAAAAA?text=No+Image`;
+                return;
+            }
+
+            const startOfYear = new Date(currentYear, 0, 0);
+            const diff = today - startOfYear;
+            const oneDay = 1000 * 60 * 60 * 24;
+            const dayOfYear = Math.floor(diff / oneDay);
+            
+            selectedWreck = wrecksToChooseFrom[dayOfYear % wrecksToChooseFrom.length];
+        }
+
+        // Prepare content for display
+        const wreckName = selectedWreck.Name || 'Unnamed Wreck';
+        const wreckLossDate = parseDateString(selectedWreck['Date of Loss']);
+        const yearsSinceLoss = currentYear - wreckLossDate.getFullYear();
+        
+        // Get the WotD Comment
+        const wotdComment = selectedWreck['WotD Comment'];
+        let displayComment = '';
+
+        if (wotdComment && wotdComment.trim() !== '') {
+            displayComment = wotdComment;
+        } else {
+            // Fallback if 'WotD Comment' is empty
+            const causeOfLoss = selectedWreck['Cause of Loss'] || 'unknown cause';
+            const depth = selectedWreck.Depth ? `in ${selectedWreck.Depth} of water` : '';
+            displayComment = `The ${wreckName} sank ${yearsSinceLoss} years ago today due to ${causeOfLoss} ${depth}.`;
+        }
+
+        // Construct URL for the wreck page
+        const wreckPageNameForUrl = wreckName.replace(/[\s.]+/g, '-').toLowerCase();
+        const wreckPageUrl = `https://www.buchandivers.com/wrecks/${wreckPageNameForUrl}`;
+
+        // Construct URL for the image
+        const wreckImageFilename = encodeURIComponent(wreckName) + '.jpg';
+        const imageUrl = `${thumbnailBucketUrl}${wreckImageFilename}`;
+        const placeholderImageUrl = `https://placehold.co/400x300/EEEEEE/AAAAAA?text=No+Image`; // Larger placeholder
+
+        // Update the HTML elements
+        const titleElem = document.getElementById("title");
+        const wreckTextElem = document.getElementById("wreckText");
+        const wreckImageElem = document.getElementById("wreckImage");
+
+        if (isAnniversary) {
+            titleElem.innerHTML = `Wrecked on this day: <a href="${wreckPageUrl}" target="_blank">${wreckName}</a>`;
+        } else {
+            titleElem.innerHTML = `Wreck of the day: <a href="${wreckPageUrl}" target="_blank">${wreckName}</a>`;
+        }
+        
+        wreckTextElem.innerHTML = displayComment; // Use the WotD Comment or fallback
+
+        wreckImageElem.src = imageUrl;
+        wreckImageElem.onerror = function() {
+            console.error(`Failed to load image: ${imageUrl}. Using placeholder.`);
+            this.onerror = null; // Prevent infinite loop if placeholder also fails
+            this.src = placeholderImageUrl;
+        };
+
+        console.log(`Image URL for Wreck of the Day: ${imageUrl}`);
+    }
+
+    // Load data when the window loads
+    window.addEventListener('load', loadWreckDataForWreckOfTheDay);
 
 </script>
-
-
 </body>
 </html>
+

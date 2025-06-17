@@ -1,155 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <link rel="stylesheet"
-              href="https://fonts.googleapis.com/css?family=Lato">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
     <style>
-      .titleFormat
-        {
-          font-family:    Lato;
-          font-size:      17px;
-          font-weight:    bold;
-          color:	      rgba(34,110,147,1)
+        :root {
+            --font-family: 'Lato', sans-serif;
+            --title-color: rgba(34, 110, 147, 1);
+            --text-color: black;
+            --border-color: black;
+            --link-color: #3498db; /* Consistent link color */
         }
-    table, td {
-        border: 1px solid black;
-    }
-    table {
-      border-collapse: collapse;
-    }
-    table, th, td{
-        padding: 5px;
-        font-size: 15px;
-        font-family: Lato;
-    }
+
+        body {
+            font-family: var(--font-family);
+            margin: 20px; /* Consistent padding from edges */
+            background-color: white; /* Consistent white background */
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            /* No align-items: center here, as content blocks will center themselves */
+        }
+
+        h2.titleFormat {
+            font-family: var(--font-family);
+            font-size: 17px;
+            font-weight: bold;
+            color: var(--title-color);
+            margin-bottom: 10px; /* Spacing below title */
+            text-align: center; /* Centered title */
+            max-width: 600px; /* Constrain width to match other modules */
+            margin: 0 auto 10px auto; /* Center the title block itself */
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%; /* Table takes full width of its container */
+            /* Removed max-width: 600px; to allow it to fill the container's full width */
+            margin: 0 auto 20px auto; /* Center table and space below */
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for table */
+            border-radius: 8px; /* Rounded corners for the table */
+            overflow: hidden; /* Ensures rounded corners apply to content */
+        }
+
+        table, td {
+            border: 1px solid var(--border-color);
+        }
+
+        table th, table td {
+            padding: 8px 12px; /* Increased padding for better readability */
+            font-size: 15px; /* Matches provided stylesheet */
+            font-family: var(--font-family);
+            text-align: left;
+            vertical-align: top; /* Align content to the top within cells */
+        }
+        
+        table th { /* For potential future headers if you add any */
+            background-color: #f2f2f2;
+            color: var(--title-color);
+            font-weight: bold;
+        }
+
+        /* Adjust column widths */
+        table colgroup col:first-child {
+            width: 120px; /* Fixed width for the date column */
+            min-width: 100px; /* Ensure it doesn't get too small on mobile */
+        }
+        table colgroup col:last-child {
+            width: auto; /* Let the second column take remaining space */
+        }
+
+        /* Styling for hyperlinks within the table */
+        table a {
+            color: var(--link-color);
+            text-decoration: none;
+            font-weight: normal; /* Keep normal weight for table links */
+        }
+        table a:hover {
+            text-decoration: underline;
+        }
+
+        #loadingMessage {
+            text-align: center;
+            padding: 20px;
+            font-size: 1.1em;
+            color: #555;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
     </style>
-    </head>
+    <title>What We Are Doing Log</title>
+</head>
+<body>
+
     <h2 id="title" class="titleFormat">What we are doing</h2>
     
-    <table> 
+    <div id="loadingMessage">Loading log entries...</div>
+
+    <table id="logTable" style="display: none;"> <!-- Hidden until data is loaded -->
       <colgroup>
-        <col style="width:100">
+        <col style="width:auto;"> <!-- Date Column -->
+        <col style="width:auto;"> <!-- Log Entry Column -->
       </colgroup>
-      <tr>
-         <tr><td>15 June 2025</td>
-            <td>In 2012, we found and dived what we believed were the remains of three distinct wrecks spread out over 100m running due north/south.  Having reviewed the footage taken on that dive, we have now identified that she is in fact a single, but badly damaged wreck.  Given the extent of the damage and the wreck's proximity to the minefield laid by UC 49, we believe she is the <a href="https://www.buchandivers.com/wrecks/bel-lily">Bel Lily</a>.  The wreck we had identified in 1999 as the Bel Lily, further to the north east has been set to 'Unknown' until we get a chance to revisit and identify her.</td></tr>
-        <tr><td>12 June 2025</td>
-            <td>More desktop digging.  The wreck which we had previously identified as the steam dredger Subworker is actually the dredger TIC No. 8.  A review of the positional information plus the distinctive stanchions seen during the dive give us a certain identification.  She was lost on her maiden voyage to Newcastle with all 5 crew while under tow in 1911.  See the new page <a href="https://www.buchandivers.com/wrecks/tic-no8">here</a></td></tr>
-        <tr><td>6 May 2025</td>
-            <td>More research of WW2 U-boat logs has finally given us a name for the Knock Wreck just off Fraserburgh.  She is a Swedish vessel <a href="https://www.buchandivers.com/wrecks/svarton">Svarton</a> sunk by the U-58 in January 1940.</td></tr>    
-        <tr><td>5 May 2025</td>
-            <td>After more research we now believe the wreck which we had identified as the Ethel Gwendoline is in fact the Parkhill.  It is likely that the Ethel Gwendoline is in deep water about 6 miles east of Rattray Head.  We have added the <a href="https://www.buchandivers.com/wrecks/parkhill">Parkhill</a> to the website.</td></tr>
-        
-        <tr><td>4 May 2025</td>
-            <td>Added the unknown trawler, which we discovered in 2023, to the website.  We will need more work to confirm its identity but we believe she is the <a href="https://www.buchandivers.com/wrecks/caersin">Caersin.</a></td></tr>
-        
-        <tr><td>30 April 2025</td>
-            <td>After an almost two year break, we returned to exploration this year and visited a new mark just off Aberdeen near to the two HM Trawlers found in 2023.  We believe this wreck to be the steam trawler <a href="https://www.buchandivers.com/wrecks/virgilia">Virgilia</a>.</td></tr>
-        
-        <tr><td>12 August 2024</td>
-            <td>Visited the wreck which we sounded in April 2021.  The divers were from a Plymouth based group - Gasperadoes - who are experienced in diving to over 100m.  Pictures and video from the dive allow us to positively confirmed her to be the wreck of the <a href="https://www.buchandivers.com/wrecks/u-77">U 77</a>.</td></tr>
-       
-        <tr><td>11 August 2024</td>
-            <td>Jim was lucky enough to be involved with the group who have found and dived the battlecruiser HMS Hawke, 85 miles east of Fraserburgh.</td></tr>
-        
-        <tr><td>22 Jun 2023</td>
-            <td>Returned to the SS Bretagne again today, armed with a list of activities to determine if she is, in fact, the SS Malmland.  It seems though, our original identification is correct!  She is the Bretagne.  The hunt for the Malmland continues.</td></tr>
-        
-        <tr><td>26 Jun 2023</td>
-            <td>Dived a new mark today, off the mouth of the Ythan. 
-        Only in 40m, and very silty.  We had believed this to be a WWI loss, an admiralty water tanker, but it turned out to be a reasonably well preserved steam trawler.  We have work to do to identify it.  A lovely dive though.</td></tr>
-        
-        <tr><td>24 Jun 2023</td>
-            <td>Dived the wreck of the <a href="https://www.buchandivers.com/wrecks/bretagne">SS Bretagne</a> today to attempt further identification.  One huge boiler seen, but close to the bow and next to a massive boiler cradle, perhaps for another boiler - which would put our original identification into question.  We will revisit for more investigation tomorrow.</td></tr>
-        
-        <tr><td>31 May 2023</td>
-            <td>We couldn't dive our intended target today so selected to return to <a href="https://www.buchandivers.com/wrecks/ormonde">HMT Ormonde</a> to try to get a more positive ID. 
-        The webpage will be updated with new photographs and dive information.</td></tr>
-        
-        <tr><td>30 May 2023</td>
-            <td>We visited the site of the Ethel Gwendoline today. 
-        A more detailed sonar survey of the wreck had indicated a 2nd hull beside the first one.  We were unable to find any trace of a 2nd hull, but we found information which means we need to go back to the drawing board on the identification of the wreck.  She can't be the Ethel Gwendoline.</td></tr>
-        
-        <tr><td>27 May 2023</td>
-        
-            <td>A further work-up day, we visited the <a href="https://www.buchandivers.com/wrecks/st-magnus">St Magnus</a>. In lovely vis, we were able to get a good look at her and discovered a possible further clue to her demise.  Look out for updates to her website entry.</td></tr>
-        
-        <tr><td>26 May 2023</td>
-            <td>Our season started yesterday with a work up dive on the <a href="https://www.buchandivers.com/wrecks/wrangler">SS Wrangler</a> to get back in practice.  All went well and we spotted a very interesting mark, looking like a small puffer or steam fishing vessel which we returned to explore today. 
-        It turned out to be a perfectly shaped granite reef!</td></tr>
-        
-        <tr><td>9 Aug 2022</td>
-            <td>Another super dive today in great conditions.  We set out to dive the southerly mark of the "New Triangle" wrecks and found the HMT Robert Bowen, lost 9/2/1940 with all hands during the action which sank the HMT Fort Royal</td></tr>
-        <tr><td>8 Aug 2022</td>
-            <td>After a few days off due to boat problems we hit the seas again in perfect conditions.  We dived the wreck known as the 33-Fathom to do more work to identify her.  It is pretty certain from her cargo, size, general arrangement and cylinder diameters that she is the SS Dungonnell lost without trace on a voyage from Shields to Belfast in 1903.</td></tr>
-        <tr><td>26 Jul 2022</td>
-            <td>Updated the website with reports on the two new wrecks discovered this month.  The <a href="https://www.buchandivers.com/wrecks/kathleen">SS Kathleen</a> and the WW2 armed trawler, <a href="https://www.buchandivers.com/wrecks/fort-royal">HMT Fort Royal</a>.</td></tr>
-        <tr><td>22 Jul 2022</td>
-            <td>We dived the westerly mark of a group of three wrecks 8 miles off Balmedie.  A great dive in super visibility.  We found the remains of an armed trawler and are working on her identification.  More soon.</td></tr>
-        <tr><td>21 Jul 2022</td>
-            <td>We returned to the unknown wreck referred to as the 33 Fathom to make a further attempt at identification.  We did not find anything definitive on our dive but have a much more detailed understanding of her structure and cargo now, which will help another attempt to identify her.</td></tr>
-        
-            <td>19 Jul 2022</td>
-            <td>We have positively identified the wreck first dived on 14 July as the <a href="https://www.buchandivers.com/wrecks/crisabelle-stephen">Crisabelle Stephen</a> and have added this to the website.  We also returned to the Hydrographic Office mark dived on 15th July and retrieved the ship's bell which identified her as the SS Kathleen, lost at sea with all crew in January 1914</td></tr> 
-        <tr>
-            <td>15 Jul 2022</td>
-            <td>It's been an excruciatingly slow start to the season! 
-        A combination of boat problems, poor weather and other holidays meant that we started late.  However, in the last couple of days we have dived two new marks off of the river Ythan, the 24 Fathom mark and a Hydrographic Office mark in 74m.  Lovely wrecks, we are in the process of assessing all the information we collected on the dive in an attempt to name them.  More soon.</td></tr> 
-        <tr>
-            <td>2 Sept 2021</td>
-            <td>We have a confirmed find of the <a href="https://www.buchandivers.com/wrecks/u-77">U 77</a>.  Very exciting! After weeks lost to diving through poor weather and now boat problems, we managed to get out on a mark and took video footage from the surface.  This footage confirms the wreck of a submarine lying 100m below us.  From research conducted by Kevin Heath and Michael Lowrey, this can only be the U 77 lost in 1916.
-        </td>
-        </tr> 
-        <tr>
-            <td>25 Jul 2021</td>
-            <td>The weather has not been kind to us in the last week. 
-        Great sea conditions, but fog and mist every day has made diving impossible.  On the only diveable day, we attempted to dive the "Knock Wreck" to try to find more clues to her identity but strong spring tides made that impossible.  However, today was perfect, glassy seas and sun! 
-        We dived the <a href="https://www.buchandivers.com/wrecks/taylor">Taylor</a>.  A lovely small, but very intact steamer.  We have new photos on the wreck page.
-        </td>
-        </tr> 
-        <tr>
-            <td>20 Jul 2021</td>
-            <td>Perfect conditions for the long trip south to dive "Hunks Big Wreck" which we have long suspected to be the Trevorian.  A lovely dive, no absolute positive ID but number and design of boilers, plus size of wreck makes it highly likely that she is the <a href="https://www.buchandivers.com/wrecks/trevorian">Trevorian</a>.
-        </td>
-        </tr> 
-        <tr>
-            <td>2 Jul 2021</td>
-            <td>An exciting trip to a new mark from the hydrographic survey.  A "steamship" in 70m, rising 8m from seabed, 60m long.  Very excited to see what it was.  We arrived in perfect glassy seas to have a wonderful dive on a rock reef!  Not another wreck to add to our list.
-        </td>
-        </tr>   
-        <tr>
-            <td>24 Jun 2021</td>
-            <td>A long trip south to dive the unidentified "33-Fathom" for further exploration.  Unfortunately our shot was off the wreck and we were unable to find it in the poor visibility in this area.</td>
-        </tr> 
-            <td>23 Jun 2021</td>
-            <td>A lovely dive on the <a href="https://www.buchandivers.com/wrecks/windward-ho">Windward Ho</a> I had forgotten just how intact she is.  Her bows are intact and her hull has a good 3-4m height here.</td>
-        </tr>
-        <tr>
-            <td>18 Jun 2021</td>
-            <td>Dived the <a href="https://www.buchandivers.com/wrecks/sofie-bakke">Sofie Bakke</a> for the first time in many years.  A grand old lady who hasn't changed much in the interval.  We mainly dived around her massive diesel engines.
-        Some new photos on the page.</td>
-        </tr>   
-        <tr>
-            <td>17 Jun 2021</td>
-            <td>We returned to the <a href="https://www.buchandivers.com/wrecks/st-fergus">St Fergus</a> for further exploration.  She is not broken in two as previously thought, however significant damage to bow area. 
-        Updates on the page.</td>
-        </tr>  
-        <tr>
-            <td>5/6 June 2021</td>
-            <td>Bad weather and equipment failures over last couple of weeks kept us from visiting the <a href="https://www.buchandivers.com/wrecks/st-fergus">St Fergus</a> again, however we managed to get in on the <a href="https://www.buchandivers.com/wrecks/simonburn">SS Simonburn</a> and the lovely <a href="https://www.buchandivers.com/wrecks/muriel">SS Muriel</a>.  Super dives, but the season has had a typically weather interrupted start!</td>
-        </tr>
-        <tr>
-            <td>17/18 May 2021</td>
-            <td>Dived <a href="https://www.buchandivers.com/wrecks/cairnmona">SS Cairnmona</a> and <a href="https://www.buchandivers.com/wrecks/flotta">HMS Flotta</a> in fantastic visibility.  Pages have been updated with new pictures by Naomi Watson.</td>
-        </tr>
-        <tr>
-            <td>22 April 2021</td>
-            <td>Diving has restarted for this year with a work-up dive on the <a href="https://www.buchandivers.com/wrecks/cairnmona">SS Cairnmona</a>.  We dived in the area of the bridge and found a lovely telegraph, the helm and lots of port-holes.</td>
-        </tr>
-        <tr>
-            <td>11 April 2021</td>
-            <td>Sounded a new mark in 103m north of Fraserburgh.  We think this will be a very special wreck and are working up to dive it and confirm its identity later in the season.</td>
-        </tr>
-        <tr>
-            <td>11 Sept 2020</td>
-            <td>We explored a new wreck in 75m, 5 miles east of Rattray Head, we believe her to be the <a href="https://www.buchandivers.com/wrecks/st-fergus">St Fergus</a> but we will need to revisit her for further confirmation.</td>
-        </tr>
+      <tbody>
+        <!-- Log entries will be inserted here by JavaScript -->
+      </tbody>
     </table>
+
+<script>
+    // Base URL for your CSV log data
+    const baseLogCsvUrl = "https://storage.googleapis.com/buchan-divers-wreck-database/log.csv";
+
+    // Function to fetch and process CSV data for the log table
+    async function loadLogData() {
+        const loadingMessageElem = document.getElementById('loadingMessage');
+        const logTableElem = document.getElementById('logTable');
+        const tableBody = logTableElem.querySelector('tbody');
+
+        loadingMessageElem.style.display = 'block'; // Show loading message
+        logTableElem.style.display = 'none'; // Hide table initially
+        tableBody.innerHTML = ''; // Clear any existing content
+
+        try {
+            // Append a timestamp to the CSV URL to bypass caching
+            const csvUrlWithBuster = `${baseLogCsvUrl}?t=${new Date().getTime()}`;
+            // Removed console.log for fetching log data from: csvUrlWithBuster
+
+            const response = await fetch(csvUrlWithBuster);
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`HTTP error fetching CSV! Status: ${response.status}, Details: ${errorText}`);
+            }
+            const csvText = await response.text();
+
+            const lines = csvText.split('\n');
+            if (lines.length < 2) {
+                console.warn("Log CSV file is empty or only has a header.");
+                loadingMessageElem.textContent = "No log entries found.";
+                return;
+            }
+
+            const headers = lines[0].split(',').map(header => header.trim());
+            const dateColIndex = headers.indexOf('date');
+            const logEntryColIndex = headers.indexOf('logEntry');
+
+            if (dateColIndex === -1 || logEntryColIndex === -1) {
+                throw new Error("Missing essential columns ('date' or 'logEntry') in log CSV header.");
+            }
+
+            for (let i = 1; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (!line) continue;
+
+                // Robust CSV parsing for lines that might contain commas within quoted fields
+                const values = [];
+                let inQuote = false;
+                let currentField = '';
+                for (let charIndex = 0; charIndex < line.length; charIndex++) {
+                    const char = line[charIndex];
+
+                    if (char === '"') {
+                        inQuote = !inQuote;
+                    } else if (char === ',' && !inQuote) {
+                        values.push(currentField);
+                        currentField = '';
+                    } else {
+                        currentField += char;
+                    }
+                }
+                values.push(currentField); // Add the last field
+
+                const trimmedValues = values.map(val => val.trim());
+
+                const date = trimmedValues[dateColIndex] || '';
+                const logEntry = trimmedValues[logEntryColIndex] || '';
+
+                if (date && logEntry) { // Only add rows if both date and logEntry are present
+                    const row = tableBody.insertRow();
+                    const dateCell = row.insertCell(0);
+                    const logEntryCell = row.insertCell(1);
+
+                    dateCell.textContent = date;
+                    logEntryCell.innerHTML = logEntry; // Use innerHTML to render hyperlinks and other HTML
+                }
+            }
+
+        } catch (error) {
+            console.error("Error loading log data:", error);
+            loadingMessageElem.innerHTML = `<p style="color: red; padding: 20px;">
+                <strong>Failed to load log entries:</strong> ${error.message}.<br>
+                Please ensure 'log.csv' exists in your Google Storage bucket and has public read access, or that CORS is configured correctly.
+                Also, verify the 'date' and 'logEntry' columns are correctly named and present.
+            </p>`;
+        } finally {
+            loadingMessageElem.style.display = 'none'; // Hide loading message
+            logTableElem.style.display = 'table'; // Show table
+        }
+    }
+
+    // Load data when the window loads
+    window.addEventListener('load', loadLogData);
+
+</script>
+</body>
+</html>
+
