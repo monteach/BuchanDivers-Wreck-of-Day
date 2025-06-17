@@ -199,8 +199,8 @@
                 transparent: true
             }).addTo(map);
 
-            // Define the URL for your CSV data
-            const csvUrl = "https://storage.googleapis.com/buchan-divers-wreck-database/wreckDatabase.csv";
+            // Base URL for your CSV data
+            const baseCsvUrl = "https://storage.googleapis.com/buchan-divers-wreck-database/wreckDatabase.csv";
 
             // --- Fallback/Example Wreck Data (if CSV fetch fails) ---
             const myWreckDataFallback = {
@@ -239,9 +239,11 @@
                 let parsedWreckData = null; // To hold the successfully parsed data
                 try {
                     loadingOverlay.style.display = 'flex'; // Show loading overlay
-                    console.log(`Attempting to fetch CSV from: ${csvUrl}`);
+                    // Append a timestamp to the CSV URL to bypass caching
+                    const csvUrlWithBuster = `${baseCsvUrl}?t=${new Date().getTime()}`;
+                    console.log(`Attempting to fetch CSV from: ${csvUrlWithBuster}`);
 
-                    const response = await fetch(csvUrl); // fetch defaults to 'cors' for cross-origin requests
+                    const response = await fetch(csvUrlWithBuster); // fetch defaults to 'cors' for cross-origin requests
                     console.log(`Fetch response status: ${response.status}`);
 
                     if (!response.ok) {
@@ -391,7 +393,7 @@
                                     // Add image at the top of the popup
                                     popupContent += `<img src="${imageUrl}" alt="Image of ${feature.properties.name}"
                                                         onerror="this.onerror=null;this.src='${placeholderImageUrl}';"
-                                                        style="max-width:100%; height:auto; display:block; margin: 0 auto 10px auto; border-radius:4px;"><br>`;
+                                                        style="max-width:90%; height:auto; display:block; margin: 0 auto 10px auto; border-radius:4px;"><br>`;
 
 
                                     // Add the name as a hyperlink
@@ -461,4 +463,5 @@
     </script>
 </body>
 </html>
+
 
