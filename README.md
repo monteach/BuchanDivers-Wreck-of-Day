@@ -6,11 +6,17 @@ Four custom functions embedded in the Buchan Shipwrecks Google Site (https://www
 - the wreck map using OpenStreetMap with a marine overlay
 
 The wreck of the day function searches a table for a wreck sunk on the exact day (today), or else finds a random one.
-It displays details of the wreck.  Shows a thumbnail image from the Google Cloud Storage bucket "buchan-divers-wreck-thumbnails" which is
+It displays details of the wreck, shows a thumbnail image from the Google Cloud Storage bucket "buchan-divers-wreck-thumbnails" which is
 in the "Buchan Divers Database" project on the Buchan Divers Google account.
 
 It is vital that the thumbnail is stored in exactly "Shipname.jpg", where shipname is the exact name i.e. where ship name is "Cape York" in the table,
 the file must be named as "Cape York.jpg" in GC Storage.
+
+Wreck thumbnails used in Wreck of the Day and on the map are held in the wreckThumbnails directory of this workspace.  They are all .jpg format.  New thumbnails can be stored here and then migrated to the production cloud using the command:
+
+gsutil cp wreckThumbnails/nameOfWreck.jpg gs://buchan-divers-wreck-thumbnails/nameOfWreck.jpg
+
+The command will migrate new thumbnail files or overwrite existing files.
 
 The code runs off two .csv files maintained in this workspace and migrated to the GCP bucket.
 
@@ -23,3 +29,5 @@ gsutil cp wreckDatabase.csv gs://buchan-divers-wreck-database/wreckDatabase.csv
 **log.csv** holds log details and can have embedded hyperlinks.  Apply updates to the file, save and migrate to cloud with:
 
 gsutil cp log.csv gs://buchan-divers-wreck-database/log.csv
+
+
