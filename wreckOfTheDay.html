@@ -27,7 +27,7 @@
             font-size: 17px;
             font-weight: bold;
             color: var(--title-color);
-            margin-bottom: 10px;
+            margin-bottom: 10px; /* Spacing below title */
             text-align: center; /* Changed back to center */
             max-width: 600px; /* Constrain width to match other content blocks */
             margin: 0 auto 10px auto; /* Centered the block itself with auto margins */
@@ -51,7 +51,7 @@
             overflow: hidden; /* Ensure image doesn't overflow container */
             border-radius: 8px; /* Rounded corners for image container */
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for image */
-            margin: 0 auto; /* Ensure image container is centered */
+            margin: 0 auto; /* Ensures image is centered within imgContainer */
         }
 
         .imgFormat {
@@ -171,11 +171,11 @@
                 'Date of Loss': headers.indexOf('Date of Loss'),
                 'Cause of Loss': headers.indexOf('Cause of Loss'),
                 'Depth': headers.indexOf('Depth'),
-                'WotD Comment': headers.indexOf('WotD Comment') // Added new column
+                'WotD Comment': headers.indexOf('WotD Comment')
             };
 
             // Check for essential columns
-            const essentialCols = ['Name', 'Date of Loss', 'WotD Comment']; // 'WotD Comment' is now essential for this module
+            const essentialCols = ['Name', 'Date of Loss', 'WotD Comment']; 
             if (essentialCols.some(col => colMap[col] === -1)) {
                 throw new Error(`Missing essential columns (${essentialCols.filter(col => colMap[col] === -1).join(', ')}) in CSV header.`);
             }
@@ -213,7 +213,14 @@
                         wreck[key] = ''; // Ensure all properties exist, even if empty
                     }
                 }
-                allWrecksData.push(wreck);
+
+                // Filter out wrecks if 'WotD Comment' is blank (after trimming)
+                if (wreck['WotD Comment'] && wreck['WotD Comment'].trim().length > 0) {
+                    allWrecksData.push(wreck);
+                } else {
+                    // Changed to console.log to ensure visibility in the Canvas preview console
+                    console.log(`Skipping wreck "${wreck.Name}" (WotD Comment blank/empty).`);
+                }
             }
 
             displayWreckOfTheDay();
@@ -223,7 +230,7 @@
             loadingMessageElem.innerHTML = `<p style="color: red; padding: 20px;">
                 <strong>Failed to load wreck data:</strong> ${error.message}.<br>
                 Please ensure the CSV file exists in your Google Storage bucket and has public read access, or that CORS is configured correctly.
-                Also, verify that the 'WotD Comment' column exists in your CSV.
+                Also, verify that the 'WotD Comment' column exists in your CSV and contains content for wrecks you wish to display.
             </p>`;
         } finally {
             loadingMessageElem.style.display = 'none'; // Hide loading message
@@ -235,7 +242,7 @@
     function displayWreckOfTheDay() {
         if (allWrecksData.length === 0) {
             document.getElementById("title").textContent = "No Wreck Data Available";
-            document.getElementById("wreckText").textContent = "Could not load wreck information.";
+            document.getElementById("wreckText").textContent = "No wrecks with comments found in the database (after filtering).";
             document.getElementById("wreckImage").src = `https://placehold.co/400x300/EEEEEE/AAAAAA?text=No+Image`;
             return;
         }
@@ -250,7 +257,7 @@
         let isAnniversary = false;
 
         // Try to find a wreck with an anniversary today
-        // Filter out wrecks that don't have a valid Date of Loss to avoid errors
+        // All wrecks in allWrecksData now have a WotD Comment
         const wrecksWithValidDates = allWrecksData.filter(wreck => {
             const lossDate = parseDateString(wreck['Date of Loss']);
             return !isNaN(lossDate.getTime());
@@ -269,12 +276,12 @@
 
         if (!selectedWreck) {
             // If no anniversary, pick one based on day of year
-            // Ensure we pick from wrecks with valid dates if available
+            // Ensure we pick from wrecks with valid dates if available (though allWrecksData now only contains valid comments)
             const wrecksToChooseFrom = wrecksWithValidDates.length > 0 ? wrecksWithValidDates : allWrecksData;
             
             if (wrecksToChooseFrom.length === 0) {
                 document.getElementById("title").textContent = "No Wreck Data Available";
-                document.getElementById("wreckText").textContent = "Could not find any wreck information.";
+                document.getElementById("wreckText").textContent = "No wrecks with comments or valid dates found in the database (after filtering).";
                 document.getElementById("wreckImage").src = `https://placehold.co/400x300/EEEEEE/AAAAAA?text=No+Image`;
                 return;
             }
@@ -289,21 +296,9 @@
 
         // Prepare content for display
         const wreckName = selectedWreck.Name || 'Unnamed Wreck';
-        const wreckLossDate = parseDateString(selectedWreck['Date of Loss']);
-        const yearsSinceLoss = currentYear - wreckLossDate.getFullYear();
         
-        // Get the WotD Comment
-        const wotdComment = selectedWreck['WotD Comment'];
-        let displayComment = '';
-
-        if (wotdComment && wotdComment.trim() !== '') {
-            displayComment = wotdComment;
-        } else {
-            // Fallback if 'WotD Comment' is empty
-            const causeOfLoss = selectedWreck['Cause of Loss'] || 'unknown cause';
-            const depth = selectedWreck.Depth ? `in ${selectedWreck.Depth} of water` : '';
-            displayComment = `The ${wreckName} sank ${yearsSinceLoss} years ago today due to ${causeOfLoss} ${depth}.`;
-        }
+        // Get the WotD Comment (guaranteed to be non-blank now)
+        const displayComment = selectedWreck['WotD Comment'];
 
         // Construct URL for the wreck page
         const wreckPageNameForUrl = wreckName.replace(/[\s.]+/g, '-').toLowerCase();
@@ -325,7 +320,7 @@
             titleElem.innerHTML = `Wreck of the day: <a href="${wreckPageUrl}" target="_blank">${wreckName}</a>`;
         }
         
-        wreckTextElem.innerHTML = displayComment; // Use the WotD Comment or fallback
+        wreckTextElem.innerHTML = displayComment; // Use the WotD Comment (no fallback needed now)
 
         wreckImageElem.src = imageUrl;
         wreckImageElem.onerror = function() {
@@ -343,4 +338,5 @@
 </script>
 </body>
 </html>
+
 
