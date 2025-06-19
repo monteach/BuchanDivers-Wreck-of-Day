@@ -9,7 +9,8 @@
             --font-family: 'Lato', sans-serif;
             --border-color: black;
             --header-color: rgba(34, 110, 147, 1);
-            --background-color: #f2f2f2;
+            --background-color: #f2f2f2; /* Light grey for header background */
+            --cell-background-color: white; /* White for data cell background */
         }
 
         body {
@@ -19,20 +20,39 @@
             color: #333;
         }
 
-        table, th, td {
+        h1 {
+            font-family: var(--font-family);
+            font-size: 20px; /* Adjust as needed for consistency */
+            font-weight: bold;
+            color: var(--header-color);
+            margin-bottom: 10px;
+            text-align: center; /* Center the main heading */
+        }
+
+        p {
+            font-family: var(--font-family);
+            font-size: 15px;
+            margin-bottom: 15px;
+            text-align: center; /* Center introductory paragraphs */
+        }
+
+        /* Apply full border to all cells and headers for border-collapse to work cleanly */
+        th, td {
             border: 1px solid var(--border-color);
             padding: 8px 12px; /* Increased padding for better readability */
             font-size: 16px;
             text-align: left;
+            background-color: var(--cell-background-color); /* Default background for data cells */
         }
 
+        /* Styling and sticky positioning for headers */
         th {
-            background-color: var(--background-color);
+            background-color: var(--background-color); /* Ensure header background is solid/opaque */
             color: var(--header-color);
             cursor: pointer;
             transition: background-color 0.3s;
-            position: sticky; /* Make headers sticky for long tables */
-            top: 0;
+            position: sticky; /* Make headers sticky */
+            top: 0; /* Stick to the top of its scrolling container */
             z-index: 10; /* Ensure headers stay above content when scrolling */
         }
 
@@ -40,28 +60,45 @@
             background-color: #e0e0e0; /* Lighter hover effect */
         }
 
-        table {
-            border-collapse: collapse;
+        /* Container for the scrollable table body */
+        #table-scroll-container {
+            max-height: 80vh; /* Set max-height relative to viewport height */
+            overflow-y: auto; /* Enable vertical scrolling for the table content */
+            overflow-x: auto; /* Allow horizontal scrolling if table is too wide */
             width: 100%;
-            margin-top: 20px; /* Space above the table */
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for table */
+            margin-top: 20px; /* Space above the container */
+            border: 1px solid var(--border-color); /* Main outer border for the whole table */
             border-radius: 8px; /* Rounded corners for the table */
-            overflow: hidden; /* Ensures rounded corners apply to content */
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for table */
+            overflow: hidden; /* Crucial for applying border-radius correctly with collapsed borders */
+        }
+        
+        table {
+            border-collapse: collapse; /* Essential for border merging */
+            width: 100%; /* Table takes full width of its container */
+            /* No direct border on the table element itself; borders are on cells and container */
+        }
+
+        /* Prevent wrapping for specific columns */
+        table td:nth-child(6), /* Date of Loss */
+        table td:nth-child(9), /* Lat */
+        table td:nth-child(10) { /* Long */
+            white-space: nowrap;
         }
 
         #myInput {
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>'); /* Replaced Google Drive link with inline SVG */
-            background-position: 10px 8px; /* Position the icon */
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>');
+            background-position: 10px 8px;
             background-repeat: no-repeat;
-            background-size: 20px 20px; /* Size the SVG icon */
-            height: 38px; /* Adjusted height for better padding */
-            width: calc(100% - 20px); /* Adjust width to fit container with padding */
+            background-size: 20px 20px;
+            height: 38px;
+            width: calc(100% - 20px);
             font-size: 16px;
-            padding: 8px 20px 8px 40px; /* Adjusted padding for icon */
-            border: 1px solid #ccc; /* Lighter border */
-            border-radius: 5px; /* Rounded corners for input */
+            padding: 8px 20px 8px 40px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
             margin-bottom: 15px;
-            box-sizing: border-box; /* Include padding and border in the element's total width and height */
+            box-sizing: border-box;
         }
 
         #loadingMessage {
@@ -75,7 +112,7 @@
         table a {
             color: #3498db;
             text-decoration: none;
-            font-weight: normal; /* Keep normal weight for table links */
+            font-weight: normal;
         }
 
         table a:hover {
@@ -92,25 +129,39 @@
 
     <p id="loadingMessage">Loading wreck data...</p>
 
-    <table id="myTable2" style="display: none;"> <!-- Hidden until data is loaded -->
-        <thead>
-            <tr>
-                <th onclick="sortTable(0)">Name</th>
-                <th onclick="sortTable(1)">Nationality</th>
-                <th onclick="sortTable(2)">Type</th>
-                <th onclick="sortTable(3)">Build Date</th>
-                <th onclick="sortTable(4)">Tonnage</th>
-                <th onclick="sortTable(5)">Date of Loss</th>
-                <th onclick="sortTable(6)">Cause of Loss</th>
-                <th onclick="sortTable(7)">Depth</th>
-                <th onclick="sortTable(8)">Lat</th>
-                <th onclick="sortTable(9)">Long</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Wreck rows will be inserted here by JavaScript -->
-        </tbody>
-    </table>
+    <div id="table-scroll-container" style="display: none;"> <!-- New wrapper for table -->
+        <table id="myTable2">
+            <colgroup>
+                <col style="width: 20%;"> <!-- Name -->
+                <col style="10%;"> <!-- Nationality -->
+                <col style="8%;">  <!-- Type -->
+                <col style="8%;">  <!-- Build Date -->
+                <col style="7%;">  <!-- Tonnage -->
+                <col style="95px;"> <!-- Date of Loss - Fixed width to prevent wrap (e.g., "10-Oct-1921") -->
+                <col style="15%;"> <!-- Cause of Loss -->
+                <col style="7%;">  <!-- Depth -->
+                <col style="90px;"> <!-- Lat - Fixed width to prevent wrap (e.g., "57 40.000N") -->
+                <col style="90px;"> <!-- Long - Fixed width to prevent wrap (e.g., "-1.500000") -->
+            </colgroup>
+            <thead>
+                <tr>
+                    <th onclick="sortTable(0)">Name</th>
+                    <th onclick="sortTable(1)">Nationality</th>
+                    <th onclick="sortTable(2)">Type</th>
+                    <th onclick="sortTable(3)">Build Date</th>
+                    <th onclick="sortTable(4)">Tonnage</th>
+                    <th onclick="sortTable(5)">Date of Loss</th>
+                    <th onclick="sortTable(6)">Cause of Loss</th>
+                    <th onclick="sortTable(7)">Depth</th>
+                    <th onclick="sortTable(8)">Lat</th>
+                    <th onclick="sortTable(9)">Long</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Wreck rows will be inserted here by JavaScript -->
+            </tbody>
+        </table>
+    </div>
 
     <script>
         // Function to convert "DD MM.mmmQ" to decimal degrees (copied from map code)
@@ -168,9 +219,9 @@
 
         async function loadTableData() {
             const loadingMessage = document.getElementById('loadingMessage');
-            const myTable = document.getElementById('myTable2');
+            const tableScrollContainer = document.getElementById('table-scroll-container'); // Reference the new container
             loadingMessage.style.display = 'block'; // Show loading message
-            myTable.style.display = 'none'; // Hide table initially
+            tableScrollContainer.style.display = 'none'; // Hide container initially
 
             try {
                 // Append a timestamp to the CSV URL to bypass caching
@@ -247,7 +298,7 @@
                 </p>`;
             } finally {
                 loadingMessage.style.display = 'none'; // Hide loading message
-                myTable.style.display = 'table'; // Show table
+                tableScrollContainer.style.display = 'block'; // Show container
             }
         }
 
