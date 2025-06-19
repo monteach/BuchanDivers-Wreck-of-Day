@@ -52,7 +52,7 @@
             cursor: pointer;
             transition: background-color 0.3s;
             position: sticky; /* Make headers sticky */
-            top: 0; /* Stick to the top of its scrolling container */
+            top: 0; /* Stick to the top of its scrolling container (which is now likely the iframe/body) */
             z-index: 10; /* Ensure headers stay above content when scrolling */
         }
 
@@ -60,11 +60,11 @@
             background-color: #e0e0e0; /* Lighter hover effect */
         }
 
-        /* Container for the scrollable table body */
+        /* Container for the table (no max-height or internal vertical scrolling) */
         #table-scroll-container {
-            max-height: 80vh; /* Set max-height relative to viewport height */
-            overflow-y: auto; /* Enable vertical scrolling for the table content */
-            overflow-x: auto; /* Allow horizontal scrolling if table is too wide */
+            /* Removed max-height to allow it to expand to content */
+            overflow-y: visible; /* Allows content to expand without internal scrollbar */
+            overflow-x: auto; /* Still allow horizontal scrolling if table is too wide */
             width: 100%;
             margin-top: 20px; /* Space above the container */
             border: 1px solid var(--border-color); /* Main outer border for the whole table */
@@ -407,3 +407,4 @@
     </script>
 </body>
 </html>
+
