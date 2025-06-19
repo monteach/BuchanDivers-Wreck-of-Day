@@ -7,72 +7,108 @@
     <style>
         :root {
             --font-family: 'Lato', sans-serif;
-            --title-color: rgba(34, 110, 147, 1);
-            --text-color: black;
-            --link-color: #3498db;
+            --border-color: black;
+            --header-color: rgba(34, 110, 147, 1);
+            --background-color: #f2f2f2; /* Light grey for header background */
+            --cell-background-color: white; /* White for data cell background */
         }
 
         body {
             font-family: var(--font-family);
-            margin: 20px;
-            background-color: white; /* Stays white */
-            color: var(--text-color);
-            display: flex;
-            flex-direction: column;
-            /* Removed align-items: center; to allow default left alignment for blocks */
+            margin: 20px; /* Add some margin around the body content */
+            background-color: #f4f7f6;
+            color: #333;
         }
 
-        h2.titleFormat {
+        h1 {
             font-family: var(--font-family);
-            font-size: 17px;
+            font-size: 20px; /* Adjust as needed for consistency */
             font-weight: bold;
-            color: var(--title-color);
-            margin-bottom: 10px; /* Spacing below title */
-            text-align: center; /* Changed back to center */
-            max-width: 600px; /* Constrain width to match other content blocks */
-            margin: 0 auto 10px auto; /* Centered the block itself with auto margins */
+            color: var(--header-color);
+            margin-bottom: 10px;
+            text-align: center; /* Center the main heading */
         }
 
-        p.bodyFormat {
+        p {
             font-family: var(--font-family);
             font-size: 15px;
-            font-weight: normal;
-            color: var(--text-color);
-            line-height: 1.6;
-            max-width: 600px; /* Constrain width for better reading */
-            margin: 0 auto 15px auto; /* Center the block itself, text inside is left aligned */
-            text-align: left; /* Left align the text within this block */
+            margin-bottom: 15px;
+            text-align: center; /* Center introductory paragraphs */
         }
 
-        .imgContainer {
+        /* Individual cell borders: Apply only bottom and right borders */
+        th, td {
+            border-bottom: 1px solid var(--border-color);
+            border-right: 1px solid var(--border-color);
+            padding: 8px 12px; /* Increased padding for better readability */
+            font-size: 16px;
+            text-align: left;
+            background-color: var(--cell-background-color); /* Default background for data cells */
+        }
+
+        /* Apply left border to the first column cells */
+        th:first-child, td:first-child {
+            border-left: 1px solid var(--border-color);
+        }
+        /* Apply top border to the first row of headers */
+        thead tr:first-child th {
+            border-top: 1px solid var(--border-color);
+        }
+
+        /* Styling and sticky positioning for headers */
+        th {
+            background-color: var(--background-color); /* Ensure header background is solid/opaque */
+            color: var(--header-color);
+            cursor: pointer;
+            transition: background-color 0.3s;
+            position: sticky; /* Make headers sticky */
+            top: 0; /* Stick to the top of its scrolling container */
+            z-index: 10; /* Ensure headers stay above content when scrolling */
+        }
+
+        th:hover {
+            background-color: #e0e0e0; /* Lighter hover effect */
+        }
+
+        /* Container for the scrollable table body, now holds the main outer border */
+        #table-scroll-container {
+            max-height: 500px; /* Adjust this value as needed to control table height */
+            overflow-y: scroll; /* Enable vertical scrolling for the table content (always show scrollbar) */
+            overflow-x: auto; /* Allow horizontal scrolling if table is too wide */
             width: 100%;
-            max-width: 600px; /* Matched to text max-width */
-            margin-bottom: 20px;
-            overflow: hidden; /* Ensure image doesn't overflow container */
-            border-radius: 8px; /* Rounded corners for image container */
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for image */
-            margin: 0 auto; /* Ensures image is centered within imgContainer */
+            margin-top: 20px; /* Space above the container */
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for container */
+            border-radius: 8px; /* Rounded corners for the container */
+            border: 1px solid var(--border-color); /* Main outer border for the whole scrollable section */
+            /* Removed the single 'overflow: hidden;' to avoid potential conflicts with specific overflow-y/x */
+        }
+        
+        table {
+            border-collapse: collapse; /* Essential for border merging */
+            width: 100%; /* Table takes full width of its container */
+            /* No direct border on the table element itself; borders are on cells and container */
         }
 
-        .imgFormat {
-            max-width: 100%;
-            max-height: 100%;
-            height: auto; /* Maintain aspect ratio */
-            display: block; /* Remove extra space below image */
-            border-radius: 4px; /* Slightly rounded image corners */
-            object-fit: cover; /* Cover the container without distortion if container has fixed height */
-            margin: 0 auto; /* Ensures image is centered within imgContainer */
+        /* Prevent wrapping for specific columns */
+        table td:nth-child(6), /* Date of Loss */
+        table td:nth-child(9), /* Lat */
+        table td:nth-child(10) { /* Long */
+            white-space: nowrap;
         }
 
-        /* Styling for hyperlinks */
-        a {
-            color: var(--link-color);
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        a:hover {
-            text-decoration: underline;
+        #myInput {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>');
+            background-position: 10px 8px;
+            background-repeat: no-repeat;
+            background-size: 20px 20px;
+            height: 38px;
+            width: calc(100% - 20px);
+            font-size: 16px;
+            padding: 8px 20px 8px 40px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
         }
 
         #loadingMessage {
@@ -82,261 +118,302 @@
             color: #555;
         }
 
+        /* Styling for table links */
+        table a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: normal;
+        }
+
+        table a:hover {
+            text-decoration: underline;
+        }
     </style>
-    <title>Wreck of the Day</title>
+    <title>Wrecks Table</title>
 </head>
 
 <body>
-    <h2 id="title" class="titleFormat">Loading...</h2>
-    
-    <div id="loadingMessage">Loading wreck data...</div>
+    <h1>Buchan Divers Wreck Database</h1>
+    <p>Use the search bar to find any of the wrecks documented on this site or use the links in the table below. Click on column headers to sort the table.</p>
+    <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for wrecks...">
 
-    <div id="content" style="display: none;"> <!-- Content hidden until loaded -->
-        <div class="imgContainer">
-            <img id="wreckImage" class="imgFormat" alt="Wreck Image">
-        </div>
-        <p id="wreckText" class="bodyFormat"></p>
+    <p id="loadingMessage">Loading wreck data...</p>
+
+    <div id="table-scroll-container" style="display: none;"> <!-- New wrapper for sticky headers -->
+        <table id="myTable2">
+            <colgroup>
+                <col style="width: 20%;"> <!-- Name -->
+                <col style="width: 10%;"> <!-- Nationality -->
+                <col style="width: 8%;">  <!-- Type -->
+                <col style="width: 8%;">  <!-- Build Date -->
+                <col style="width: 7%;">  <!-- Tonnage -->
+                <col style="width: 95px;"> <!-- Date of Loss - Fixed width to prevent wrap (e.g., "10-Oct-1921") -->
+                <col style="width: 15%;"> <!-- Cause of Loss -->
+                <col style="width: 7%;">  <!-- Depth -->
+                <col style="width: 90px;"> <!-- Lat - Fixed width to prevent wrap (e.g., "57 40.000N") -->
+                <col style="width: 90px;"> <!-- Long - Fixed width to prevent wrap (e.g., "-1.500000") -->
+            </colgroup>
+            <thead>
+                <tr>
+                    <th onclick="sortTable(0)">Name</th>
+                    <th onclick="sortTable(1)">Nationality</th>
+                    <th onclick="sortTable(2)">Type</th>
+                    <th onclick="sortTable(3)">Build Date</th>
+                    <th onclick="sortTable(4)">Tonnage</th>
+                    <th onclick="sortTable(5)">Date of Loss</th>
+                    <th onclick="sortTable(6)">Cause of Loss</th>
+                    <th onclick="sortTable(7)">Depth</th>
+                    <th onclick="sortTable(8)">Lat</th>
+                    <th onclick="sortTable(9)">Long</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Wreck rows will be inserted here by JavaScript -->
+            </tbody>
+        </table>
     </div>
 
-<script>
-    // Global helper function to parse a date string (expected dd-mmm-yyyy) into a Date object
-    function parseDateString(date) {
-        if (!date) return new Date(0); // Return epoch start for empty/null dates
-        const months = {
-            "Jan": "01", "Feb": "02", "Mar": "03", "Apr": "04",
-            "May": "05", "Jun": "06", "Jul": "07", "Aug": "08",
-            "Sep": "09", "Oct": "10", "Nov": "11", "Dec": "12"
-        };
-        const parts = date.split('-');
-        if (parts.length === 3 && months[parts[1]]) {
-            // Attempt to parse dd-mmm-yyyy
-            const day = parts[0];
-            const month = months[parts[1]];
-            const year = parts[2];
-            return new Date(`${year}-${month}-${day}`);
-        }
-        // Fallback for other formats or invalid dates
-        return new Date(date); // This might return "Invalid Date" if the format is truly unparseable
-    }
-
-    // Function to format a Date object into dd-mmm-yyyy string (for display purposes)
-    function formatDateToString(dateObj) {
-        if (!(dateObj instanceof Date) || isNaN(dateObj.getTime())) {
-            return ''; // Return empty string for invalid Date objects
-        }
-        const options = { day: '2-digit', month: 'short', year: 'numeric' };
-        return dateObj.toLocaleDateString('en-GB', options); // 'en-GB' ensures dd/mm/yyyy structure, month: 'short' for mmm
-    }
-
-    // Base URL for your CSV data
-    const baseCsvUrl = "https://storage.googleapis.com/buchan-divers-wreck-database/wreckDatabase.csv";
-    const thumbnailBucketUrl = "https://storage.googleapis.com/buchan-divers-wreck-thumbnails/";
-    
-    let allWrecksData = []; // Store the parsed CSV data globally
-
-    // Function to fetch and process CSV data
-    async function loadWreckDataForWreckOfTheDay() {
-        const loadingMessageElem = document.getElementById('loadingMessage');
-        const contentElem = document.getElementById('content');
-        const titleElem = document.getElementById('title');
-
-        loadingMessageElem.style.display = 'block';
-        contentElem.style.display = 'none';
-        titleElem.textContent = "Loading...";
-
-        try {
-            // Append a timestamp to the CSV URL to bypass caching
-            const csvUrlWithBuster = `${baseCsvUrl}?t=${new Date().getTime()}`;
-            console.log(`Fetching wreck data for Wreck of the Day from: ${csvUrlWithBuster}`);
-
-            const response = await fetch(csvUrlWithBuster);
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`HTTP error fetching CSV! Status: ${response.status}, Details: ${errorText}`);
+    <script>
+        // Function to convert "DD MM.mmmQ" to decimal degrees (copied from map code)
+        function convertDMQToDecimal(coordStr) {
+            if (!coordStr) return null;
+            const trimmedCoordStr = coordStr.trim();
+            const parts = trimmedCoordStr.match(/(\d+)\s+(\d+\.\d+)([NSEW])/i);
+            if (!parts) {
+                // console.warn("Could not parse coordinate string:", trimmedCoordStr); // Keep this for internal debugging, but not in final console output for user
+                return null;
             }
-            const csvText = await response.text();
-
-            const lines = csvText.split('\n');
-            if (lines.length < 2) {
-                console.warn("CSV file is empty or only has a header.");
-                loadingMessageElem.textContent = "No wreck data found.";
-                return;
+            let degrees = parseFloat(parts[1]);
+            let minutes = parseFloat(parts[2]);
+            const hemisphere = parts[3].toUpperCase();
+            let decimal = degrees + (minutes / 60);
+            if (hemisphere === 'S' || hemisphere === 'W') {
+                decimal *= -1;
             }
+            return decimal;
+        }
 
-            const headers = lines[0].split(',').map(header => header.trim());
-            
-            // Map headers to properties for easy access
-            const colMap = {
-                'Name': headers.indexOf('Name'),
-                'Date of Loss': headers.indexOf('Date of Loss'),
-                'Cause of Loss': headers.indexOf('Cause of Loss'),
-                'Depth': headers.indexOf('Depth'),
-                'WotD Comment': headers.indexOf('WotD Comment')
+        // Global helper function to parse a date string (expected dd-mmm-yyyy) into a Date object
+        function parseDateString(date) {
+            if (!date) return new Date(0); // Return epoch start for empty/null dates
+            const months = {
+                "Jan": "01", "Feb": "02", "Mar": "03", "Apr": "04",
+                "May": "05", "Jun": "06", "Jul": "07", "Aug": "08",
+                "Sep": "09", "Oct": "10", "Nov": "11", "Dec": "12"
             };
-
-            // Check for essential columns
-            const essentialCols = ['Name', 'Date of Loss', 'WotD Comment']; 
-            if (essentialCols.some(col => colMap[col] === -1)) {
-                throw new Error(`Missing essential columns (${essentialCols.filter(col => colMap[col] === -1).join(', ')}) in CSV header.`);
+            const parts = date.split('-');
+            if (parts.length === 3 && months[parts[1]]) {
+                // Attempt to parse dd-mmm-yyyy
+                const day = parts[0];
+                const month = months[parts[1]];
+                const year = parts[2];
+                return new Date(`${year}-${month}-${day}`);
             }
+            // Fallback for other formats or invalid dates
+            return new Date(date); // This might return "Invalid Date" if the format is truly unparseable
+        }
 
-            allWrecksData = []; // Clear previous data
-            for (let i = 1; i < lines.length; i++) {
-                const line = lines[i].trim();
-                if (!line) continue;
+        // Function to format a Date object into dd-mmm-yyyy string
+        function formatDateToString(dateObj) {
+            if (!(dateObj instanceof Date) || isNaN(dateObj.getTime())) {
+                return ''; // Return empty string for invalid Date objects
+            }
+            const options = { day: '2-digit', month: 'short', year: 'numeric' };
+            return dateObj.toLocaleDateString('en-GB', options); // 'en-GB' ensures dd/mm/yyyy structure, month: 'short' for mmm
+        }
 
-                // Robust CSV parsing for lines that might contain commas within quoted fields
-                const values = [];
-                let inQuote = false;
-                let currentField = '';
-                for (let charIndex = 0; charIndex < line.length; charIndex++) {
-                    const char = line[charIndex];
+        // Base URL for your CSV data
+        const baseCsvUrl = "https://storage.googleapis.com/buchan-divers-wreck-database/wreckDatabase.csv";
+        
+        let allWreckData = []; // Store the parsed data for sorting/searching
 
-                    if (char === '"') {
-                        inQuote = !inQuote;
-                    } else if (char === ',' && !inQuote) {
-                        values.push(currentField);
-                        currentField = '';
-                    } else {
-                        currentField += char;
-                    }
+        async function loadTableData() {
+            const loadingMessage = document.getElementById('loadingMessage');
+            const tableScrollContainer = document.getElementById('table-scroll-container'); // Reference the new container
+            loadingMessage.style.display = 'block'; // Show loading message
+            tableScrollContainer.style.display = 'none'; // Hide container initially
+
+            try {
+                // Append a timestamp to the CSV URL to bypass caching
+                const csvUrlWithBuster = `${baseCsvUrl}?t=${new Date().getTime()}`;
+                console.log(`Attempting to fetch CSV for table from: ${csvUrlWithBuster}`);
+
+                const response = await fetch(csvUrlWithBuster);
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP error fetching CSV! Status: ${response.status}, Details: ${errorText}`);
                 }
-                values.push(currentField); // Add the last field
+                const csvText = await response.text();
 
-                const trimmedValues = values.map(val => val.trim());
-
-                const wreck = {};
-                for (const key in colMap) {
-                    if (colMap[key] !== -1 && trimmedValues[colMap[key]] !== undefined) {
-                        wreck[key] = trimmedValues[colMap[key]];
-                    } else {
-                        wreck[key] = ''; // Ensure all properties exist, even if empty
-                    }
+                const lines = csvText.split('\n');
+                if (lines.length < 2) {
+                    console.warn("CSV file is empty or only has a header.");
+                    loadingMessage.textContent = "No wreck data found.";
+                    return;
                 }
 
-                // Filter out wrecks if 'WotD Comment' is blank (after trimming)
-                if (wreck['WotD Comment'] && wreck['WotD Comment'].trim().length > 0) {
-                    allWrecksData.push(wreck);
+                const headers = lines[0].split(',').map(header => header.trim());
+                
+                // Map headers to properties for easy access
+                const colMap = {
+                    'Name': headers.indexOf('Name'),
+                    'Nationality': headers.indexOf('Nationality'),
+                    'Type': headers.indexOf('Type'),
+                    'Build Date': headers.indexOf('Build Date'),
+                    'Tonnage': headers.indexOf('Tonnage'),
+                    'Date of Loss': headers.indexOf('Date of Loss'),
+                    'Cause of Loss': headers.indexOf('Cause of Loss'),
+                    'Depth': headers.indexOf('Depth'),
+                    'Lat': headers.indexOf('Lat'),
+                    'Long': headers.indexOf('Long')
+                };
+
+                // Check for essential columns (Name, Lat, Long are crucial)
+                const essentialCols = ['Name', 'Lat', 'Long'];
+                if (essentialCols.some(col => colMap[col] === -1)) {
+                    throw new Error("Missing essential columns (Name, Lat, Long) in CSV header.");
+                }
+
+                allWreckData = []; // Clear previous data
+                for (let i = 1; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    if (!line) continue;
+
+                    const values = line.split(',').map(val => val ? val.trim() : '');
+
+                    // Ensure we have enough values for the columns we intend to use
+                    if (values.length <= Math.max(...Object.values(colMap).filter(idx => idx !== -1))) {
+                        console.warn(`Skipping malformed or incomplete line: ${line}`);
+                        continue;
+                    }
+
+                    const wreck = {};
+                    for (const key in colMap) {
+                        if (colMap[key] !== -1 && values[colMap[key]] !== undefined) {
+                            wreck[key] = values[colMap[key]];
+                        } else {
+                            wreck[key] = ''; // Ensure all properties exist, even if empty
+                        }
+                    }
+                    allWreckData.push(wreck);
+                }
+
+                populateTable(allWreckData);
+
+            } catch (error) {
+                console.error("Error loading or processing wreck data for table:", error);
+                loadingMessage.innerHTML = `<p style="color: red; padding: 20px;">
+                    <strong>Failed to load wreck data:</strong> ${error.message}.<br>
+                    Please ensure the CSV file exists in your Google Storage bucket and has public read access, or that CORS is configured correctly.
+                </p>`;
+            } finally {
+                loadingMessage.style.display = 'none'; // Hide loading message
+                tableScrollContainer.style.display = 'block'; // Show container
+            }
+        }
+
+        function populateTable(data) {
+            const tableBody = document.querySelector('#myTable2 tbody');
+            tableBody.innerHTML = ''; // Clear existing rows
+
+            data.forEach(wreck => {
+                const row = tableBody.insertRow();
+
+                // Name (hyperlink)
+                const nameCell = row.insertCell(0);
+                const wreckNameForUrl = wreck.Name.replace(/[\s.]+/g, '-').toLowerCase();
+                const wreckPageUrl = `https://www.buchandivers.com/wrecks/${wreckNameForUrl}`;
+                nameCell.innerHTML = `<a href="${wreckPageUrl}" target="_blank">${wreck.Name || 'Unnamed Wreck'}</a>`;
+
+                // Other fields
+                row.insertCell(1).textContent = wreck.Nationality || '';
+                row.insertCell(2).textContent = wreck.Type || '';
+                row.insertCell(3).textContent = wreck['Build Date'] || '';
+                row.insertCell(4).textContent = wreck.Tonnage || '';
+                // Format 'Date of Loss' for display
+                row.insertCell(5).textContent = formatDateToString(parseDateString(wreck['Date of Loss']));
+                row.insertCell(6).textContent = wreck['Cause of Loss'] || '';
+                row.insertCell(7).textContent = wreck.Depth || '';
+                row.insertCell(8).textContent = wreck.Lat || '';
+                row.insertCell(9).textContent = wreck.Long || '';
+            });
+        }
+
+        function myFunction() {
+            var input = document.getElementById("myInput");
+            var filter = input.value.toUpperCase();
+            var tableBody = document.querySelector('#myTable2 tbody');
+            var tr = tableBody.getElementsByTagName("tr"); // Get rows from tbody
+
+            for (var i = 0; i < tr.length; i++) {
+                var td = tr[i].getElementsByTagName("td")[0]; // Check only the Name column for search
+                if (td) {
+                    var txtValue = td.textContent || td.innerText;
+                    tr[i].style.display = txtValue.toUpperCase().indexOf(filter) > -1 ? "" : "none";
+                }
+            }
+        }
+
+        let sortDirections = {}; // To keep track of sort direction for each column
+
+        function sortTable(columnIndex) {
+            let table = document.getElementById("myTable2");
+            let tableBody = table.querySelector('tbody');
+            let rows = Array.from(tableBody.rows);
+
+            // Determine sort direction
+            let currentDirection = sortDirections[columnIndex] === 'asc' ? 'desc' : 'asc';
+            sortDirections[columnIndex] = currentDirection;
+
+            rows.sort((rowA, rowB) => {
+                let cellA = rowA.cells[columnIndex].textContent.trim() || "";
+                let cellB = rowB.cells[columnIndex].textContent.trim() || "";
+
+                let comparison = 0;
+
+                // Handle specific column types for sorting
+                if (columnIndex === 7) { // Depth
+                    comparison = compareDepth(cellA, cellB);
+                } else if (columnIndex === 5) { // Date of Loss
+                    // Use parseDateString for consistent date comparison
+                    let dateObjA = parseDateString(cellA);
+                    let dateObjB = parseDateString(cellB);
+                    comparison = dateObjA.getTime() - dateObjB.getTime();
+                } else if (columnIndex === 4) { // Tonnage
+                    comparison = compareTonnage(cellA, cellB);
                 } else {
-                    // Changed to console.log to ensure visibility in the Canvas preview console
-                    console.log(`Skipping wreck "${wreck.Name}" (WotD Comment blank/empty).`);
+                    // Default string comparison for other columns
+                    comparison = cellA.localeCompare(cellB);
                 }
-            }
 
-            displayWreckOfTheDay();
+                return currentDirection === 'asc' ? comparison : -comparison;
+            });
 
-        } catch (error) {
-            console.error("Error loading wreck data for Wreck of the Day:", error);
-            loadingMessageElem.innerHTML = `<p style="color: red; padding: 20px;">
-                <strong>Failed to load wreck data:</strong> ${error.message}.<br>
-                Please ensure the CSV file exists in your Google Storage bucket and has public read access, or that CORS is configured correctly.
-                Also, verify that the 'WotD Comment' column exists in your CSV and contains content for wrecks you wish to display.
-            </p>`;
-        } finally {
-            loadingMessageElem.style.display = 'none'; // Hide loading message
-            contentElem.style.display = 'block'; // Show content
-        }
-    }
-
-    // Function to find and display the wreck of the day
-    function displayWreckOfTheDay() {
-        if (allWrecksData.length === 0) {
-            document.getElementById("title").textContent = "No Wreck Data Available";
-            document.getElementById("wreckText").textContent = "No wrecks with comments found in the database (after filtering).";
-            document.getElementById("wreckImage").src = `https://placehold.co/400x300/EEEEEE/AAAAAA?text=No+Image`;
-            return;
+            // Append sorted rows back into the table body
+            rows.forEach(row => tableBody.appendChild(row));
         }
 
-        const today = new Date();
-        const currentDay = today.getDate();
-        // getMonth() returns 0-11, so add 1 for 1-12
-        const currentMonth = today.getMonth() + 1; 
-        const currentYear = today.getFullYear();
-        
-        let selectedWreck = null;
-        let isAnniversary = false;
-
-        // Try to find a wreck with an anniversary today
-        // All wrecks in allWrecksData now have a WotD Comment
-        const wrecksWithValidDates = allWrecksData.filter(wreck => {
-            const lossDate = parseDateString(wreck['Date of Loss']);
-            return !isNaN(lossDate.getTime());
-        });
-
-        for (let i = 0; i < wrecksWithValidDates.length; i++) {
-            const wreck = wrecksWithValidDates[i];
-            const lossDate = parseDateString(wreck['Date of Loss']);
-
-            if (lossDate.getDate() === currentDay && (lossDate.getMonth() + 1) === currentMonth) {
-                selectedWreck = wreck;
-                isAnniversary = true;
-                break; // Found an anniversary, use this one
-            }
+        // Comparison function for Depth
+        function compareDepth(depthA, depthB) {
+            // Extracts numbers from strings like "12 in 14m" or "45 in 50m"
+            // If the string is empty or invalid, treat it as 0 for sorting purposes
+            let depthValueA = parseFloat(depthA.match(/(\d+\.?\d*)/)) || 0;
+            let depthValueB = parseFloat(depthB.match(/(\d+\.?\d*)/)) || 0;
+            return depthValueA - depthValueB;
         }
 
-        if (!selectedWreck) {
-            // If no anniversary, pick one based on day of year
-            // Ensure we pick from wrecks with valid dates if available (though allWrecksData now only contains valid comments)
-            const wrecksToChooseFrom = wrecksWithValidDates.length > 0 ? wrecksWithValidDates : allWrecksData;
-            
-            if (wrecksToChooseFrom.length === 0) {
-                document.getElementById("title").textContent = "No Wreck Data Available";
-                document.getElementById("wreckText").textContent = "No wrecks with comments or valid dates found in the database (after filtering).";
-                document.getElementById("wreckImage").src = `https://placehold.co/400x300/EEEEEE/AAAAAA?text=No+Image`;
-                return;
-            }
-
-            const startOfYear = new Date(currentYear, 0, 0);
-            const diff = today - startOfYear;
-            const oneDay = 1000 * 60 * 60 * 24;
-            const dayOfYear = Math.floor(diff / oneDay);
-            
-            selectedWreck = wrecksToChooseFrom[dayOfYear % wrecksToChooseFrom.length];
+        // Comparison function for Tonnage
+        function compareTonnage(tonnageA, tonnageB) {
+            let numA = parseInt(tonnageA, 10);
+            let numB = parseInt(tonnageB, 10);
+            // Handle NaN values from parseInt for empty/non-numeric strings
+            if (isNaN(numA)) numA = 0;
+            if (isNaN(numB)) numB = 0;
+            return numA - numB;
         }
 
-        // Prepare content for display
-        const wreckName = selectedWreck.Name || 'Unnamed Wreck';
-        
-        // Get the WotD Comment (guaranteed to be non-blank now)
-        const displayComment = selectedWreck['WotD Comment'];
-
-        // Construct URL for the wreck page
-        const wreckPageNameForUrl = wreckName.replace(/[\s.]+/g, '-').toLowerCase();
-        const wreckPageUrl = `https://www.buchandivers.com/wrecks/${wreckPageNameForUrl}`;
-
-        // Construct URL for the image
-        const wreckImageFilename = encodeURIComponent(wreckName) + '.jpg';
-        const imageUrl = `${thumbnailBucketUrl}${wreckImageFilename}`;
-        const placeholderImageUrl = `https://placehold.co/400x300/EEEEEE/AAAAAA?text=No+Image`; // Larger placeholder
-
-        // Update the HTML elements
-        const titleElem = document.getElementById("title");
-        const wreckTextElem = document.getElementById("wreckText");
-        const wreckImageElem = document.getElementById("wreckImage");
-
-        if (isAnniversary) {
-            titleElem.innerHTML = `Wrecked on this day: <a href="${wreckPageUrl}" target="_blank">${wreckName}</a>`;
-        } else {
-            titleElem.innerHTML = `Wreck of the day: <a href="${wreckPageUrl}" target="_blank">${wreckName}</a>`;
-        }
-        
-        wreckTextElem.innerHTML = displayComment; // Use the WotD Comment (no fallback needed now)
-
-        wreckImageElem.src = imageUrl;
-        wreckImageElem.onerror = function() {
-            console.error(`Failed to load image: ${imageUrl}. Using placeholder.`);
-            this.onerror = null; // Prevent infinite loop if placeholder also fails
-            this.src = placeholderImageUrl;
-        };
-
-        console.log(`Image URL for Wreck of the Day: ${imageUrl}`);
-    }
-
-    // Load data when the window loads
-    window.addEventListener('load', loadWreckDataForWreckOfTheDay);
-
-</script>
+        // Initial data load when the page loads
+        window.addEventListener('load', loadTableData);
+    </script>
 </body>
 </html>
-
-
