@@ -15,7 +15,7 @@
 
         body {
             font-family: var(--font-family);
-            margin: 20px; /* Add some margin around the body content */
+            margin: 5px; /* Reduced margin to maximize space */
             background-color: #f4f7f6;
             color: #333;
         }
@@ -36,7 +36,7 @@
             text-align: center; /* Center introductory paragraphs */
         }
 
-        /* Apply full border to all cells and headers for border-collapse to work cleanly */
+        /* Apply basic borders to all cells and headers */
         th, td {
             border: 1px solid var(--border-color);
             padding: 8px 12px; /* Increased padding for better readability */
@@ -45,44 +45,43 @@
             background-color: var(--cell-background-color); /* Default background for data cells */
         }
 
-        /* Styling and sticky positioning for headers */
+        /* Styling for headers (no sticky positioning or special overflow) */
         th {
             background-color: var(--background-color); /* Ensure header background is solid/opaque */
             color: var(--header-color);
             cursor: pointer;
             transition: background-color 0.3s;
-            position: sticky; /* Make headers sticky */
-            top: 0; /* Stick to the top of its scrolling container (which is now likely the iframe/body) */
-            z-index: 10; /* Ensure headers stay above content when scrolling */
         }
 
         th:hover {
             background-color: #e0e0e0; /* Lighter hover effect */
         }
 
-        /* Container for the table (no max-height or internal vertical scrolling) */
+        /* Container for the table (no scrolling properties, will expand to fit table) */
         #table-scroll-container {
-            /* Removed max-height to allow it to expand to content */
-            overflow-y: visible; /* Allows content to expand without internal scrollbar */
-            overflow-x: auto; /* Still allow horizontal scrolling if table is too wide */
-            width: 100%;
+            width: 100%; /* Maximize width within its parent container (iframe) */
             margin-top: 20px; /* Space above the container */
-            border: 1px solid var(--border-color); /* Main outer border for the whole table */
-            border-radius: 8px; /* Rounded corners for the table */
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for table */
-            overflow: hidden; /* Crucial for applying border-radius correctly with collapsed borders */
+            /* No max-height, overflow-y, overflow-x. Table will expand naturally. */
         }
         
         table {
             border-collapse: collapse; /* Essential for border merging */
             width: 100%; /* Table takes full width of its container */
-            /* No direct border on the table element itself; borders are on cells and container */
+            border: 1px solid var(--border-color); /* Main outer border for the whole table */
+            border-radius: 8px; /* Rounded corners for the table */
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for table */
+            overflow: hidden; /* Crucial for applying border-radius correctly with collapsed borders */
         }
 
-        /* Prevent wrapping for specific columns */
-        table td:nth-child(6), /* Date of Loss */
-        table td:nth-child(9), /* Lat */
-        table td:nth-child(10) { /* Long */
+        /* Apply white-space: nowrap to specific columns */
+        table td:nth-child(1), /* Name column */
+        table th:nth-child(1),
+        table td:nth-child(6), /* Date of Loss column */
+        table th:nth-child(6),
+        table td:nth-child(9), /* Lat column */
+        table th:nth-child(9),
+        table td:nth-child(10), /* Long column */
+        table th:nth-child(10) {
             white-space: nowrap;
         }
 
@@ -129,19 +128,19 @@
 
     <p id="loadingMessage">Loading wreck data...</p>
 
-    <div id="table-scroll-container" style="display: none;"> <!-- New wrapper for table -->
+    <div id="table-scroll-container" style="display: none;"> <!-- Wrapper for table content -->
         <table id="myTable2">
             <colgroup>
-                <col style="width: 20%;"> <!-- Name -->
-                <col style="10%;"> <!-- Nationality -->
-                <col style="8%;">  <!-- Type -->
-                <col style="8%;">  <!-- Build Date -->
-                <col style="7%;">  <!-- Tonnage -->
-                <col style="95px;"> <!-- Date of Loss - Fixed width to prevent wrap (e.g., "10-Oct-1921") -->
-                <col style="15%;"> <!-- Cause of Loss -->
-                <col style="7%;">  <!-- Depth -->
-                <col style="90px;"> <!-- Lat - Fixed width to prevent wrap (e.g., "57 40.000N") -->
-                <col style="90px;"> <!-- Long - Fixed width to prevent wrap (e.g., "-1.500000") -->
+                <col style="width: auto;"> <!-- Name -->
+                <col style="width: auto;"> <!-- Nationality -->
+                <col style="width: auto;">  <!-- Type -->
+                <col style="width: auto;">  <!-- Build Date -->
+                <col style="width: auto;">  <!-- Tonnage -->
+                <col style="width: auto;"> <!-- Date of Loss -->
+                <col style="width: auto;"> <!-- Cause of Loss -->
+                <col style="width: auto;">  <!-- Depth -->
+                <col style="width: auto;"> <!-- Lat -->
+                <col style="width: auto;"> <!-- Long -->
             </colgroup>
             <thead>
                 <tr>
@@ -307,7 +306,7 @@
             tableBody.innerHTML = ''; // Clear existing rows
 
             data.forEach(wreck => {
-                const row = tableBody.insertRow();
+                const row = tableBody.insertRow(); 
 
                 // Name (hyperlink)
                 const nameCell = row.insertCell(0);
@@ -407,4 +406,3 @@
     </script>
 </body>
 </html>
-
